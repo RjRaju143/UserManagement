@@ -4,7 +4,6 @@ import { User } from "../entity/User.js"
 
 import env from '#start/env'
 
-
 export const AppDataSource = new DataSource({
     type: "postgres",
     host: env.get('DB_HOST'),

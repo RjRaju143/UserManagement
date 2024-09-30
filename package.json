@@ -55,6 +55,7 @@
     "@adonisjs/cors": "^2.2.1",
     "@adonisjs/lucid": "^21.2.0",
     "@vinejs/vine": "^2.1.0",
+    "adonis-autoswagger": "^3.63.0",
     "pg": "^8.13.0",
     "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.20"
