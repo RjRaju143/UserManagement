@@ -1,18 +1,20 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
-// import { User } from "./entity/User"
+import { User } from "../entity/User.js"
+
+import env from '#start/env'
+
 
 export const AppDataSource = new DataSource({
     type: "postgres",
-    host: "localhost",
-    port: 5432,
-    username: "postgres",
-    password: "postgres",
-    database: "typeormadonisjs",
-    synchronize: true,
-    logging: false,
-    // entities: [User],
-    entities: [],
+    host: env.get('DB_HOST'),
+    port: env.get('DB_PORT'),
+    username: env.get('DB_USER'),
+    password: env.get('DB_PASS'),
+    database: env.get('DB_NAME'),
+    synchronize: env.get('DEBUG'),
+    logging: env.get('DEBUG'),
+    entities: [User],
     migrations: [],
     subscribers: [],
 })
