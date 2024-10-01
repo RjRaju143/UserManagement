@@ -40,18 +40,49 @@ export class UserService {
       return { status: 500, message: { message: 'Error creating user' } };
     }
   }
+
+  // async getAll() {
+  //   try {
+  //     const users = await AppDataSource.manager.find(AuthUser);
+  //     const usersWithoutPassword = users.map(({ password, ...userWithoutPassword }) => userWithoutPassword);
+  //     return { status: 200, users: usersWithoutPassword };
+  //   } catch (error) {
+  //     console.error('Error fetching users:', error);
+  //     return { status: 500, message: 'Error fetching users' };
+  //   }
+  // }
+
+  //// TODO
+  async getAll() {
+    try {
+      const users = await AppDataSource.manager.find(AuthUser);
+
+      const usersWithoutPassword = await Promise.all(users.map(async user => {
+        const userGroups = await AppDataSource.manager.find(UserGroup, { where: { id: user.id }, relations: ['group'] });
+        console.log('userGroups....', userGroups)
+
+        const groups = userGroups.map(ug => ({
+          id: ug.group.id,
+          name: ug.group.name,
+        }));
+
+        const { password, ...userWithoutPassword } = user;
+
+        return {
+          ...userWithoutPassword,
+          groups,
+          group_ids: groups.map(group => group.id),
+        };
+      }));
+
+      return { status: 200, users: usersWithoutPassword };
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      return { status: 500, message: 'Error fetching users' };
+    }
+  }
 }
 
-
-// async getAll() {
-//   try {
-//     const users = await AppDataSource.manager.find(AuthUser);
-//     return { status: 200, users };
-//   } catch (error) {
-//     console.error('Error fetching users:', error);
-//     return { status: 500, message: 'Error fetching users' }
-//   }
-// }
 
 // async getById(userId: number) {
 //   try {

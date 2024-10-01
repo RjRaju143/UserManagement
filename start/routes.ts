@@ -9,17 +9,19 @@ router.get('/api', async () => {
   }
 })
 
-router.post('/users/create', [UsersController, 'create'])
-
 router.post('/group/create', [GroupController, 'createGroup'])
 
-// router.get('/group/permissions', [GroupController, 'createPermissions'])
+router.post('/users/create', [UsersController, 'create'])
 
-// router.get('/users/list', [UsersController, 'getAll'])
+router.get('/users/list', [UsersController, 'getAll'])
+
 
 // router.get('/users/:id', [UsersController, 'getById'])
 
 // router.put('/users/:id', [UsersController, 'update'])
 
 // router.delete('/users/:id', [UsersController, 'delete'])
+
+// router.get('/group/permissions', [GroupController, 'createPermissions'])
+
 

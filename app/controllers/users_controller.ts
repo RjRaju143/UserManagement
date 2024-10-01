@@ -11,4 +11,9 @@ export default class UsersController {
     const result = await this.userService.create(username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds);
     return response.status(result.status).json(result);
   }
+
+  public async getAll({ response }: HttpContext) {
+    const result = await this.userService.getAll();
+    return response.status(result.status).json(result);
+  }
 }
