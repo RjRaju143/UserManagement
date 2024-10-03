@@ -4,6 +4,11 @@ npm install typeorm pg reflect-metadata
 
 npm install typeorm reflect-metadata @types/node typescript
 
+node ace list:routes
+
+npm install @adonisjs/validator
+
+
 ### migration
 npx typeorm migration:run ----dataSource ./build/config/data-source.js
 

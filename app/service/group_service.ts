@@ -6,6 +6,7 @@ import { AuthPermission } from '../../entity/AuthPermission.js';
 
 @inject()
 export class UserGroupService {
+  
   public async create(name: string, isStatic: boolean, permissionsIds: number[]) {
     return await this.createGroup(name, isStatic, permissionsIds);
   }
@@ -24,7 +25,7 @@ export class UserGroupService {
 
     const validPermissionsIds = permissionsIds.filter(id => existingPermissionIds.has(id));
 
-    await Promise.all(validPermissionsIds.map(async (permissionId) => {
+    await Promise.all(validPermissionsIds.map((permissionId) => {
       const authGroupPermissions = new AuthGroupPermissions();
       authGroupPermissions.group = savedGroup;
       authGroupPermissions.permission = { id: Number(permissionId) } as AuthPermission;

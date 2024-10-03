@@ -1,17 +1,31 @@
 import { inject } from '@adonisjs/core';
 import { HttpContext } from '@adonisjs/core/http';
+import { In } from 'typeorm';
 import { UserGroupService } from '../service/group_service.js';
 import permissions from '../../entity/userpermissions.js';
 import { AppDataSource } from "../../config/data-source.js";
 import { AuthPermission } from '../../entity/AuthPermission.js';
-import { In } from 'typeorm';
+import { CreateGroupValidator } from "../validator/CreateGroupValidator.js"
 
 @inject()
 export default class UserGroupsController {
   constructor(private userGroupService: UserGroupService) { }
 
+  /**
+   * @createGroup
+   * @operationId createGroup
+   * @description Creates a new user group with specified permissions.
+   * @requestBody {"name": "stringOne","isStatic": false,"permissionsIds": [1, 2, 3]}
+   * @responseBody 201 - {"name": "stringOne","isStatic": false,"permissionsIds": [1, 2, 3]}
+   * @paramUse(sortable, filterable)
+  */
   public async createGroup({ request, response }: HttpContext) {
-    const { name, isStatic, permissionsIds } = request.all();
+    
+    const validatedData = await request.validate({
+      schema: CreateGroupValidator,
+    });
+    const { name, isStatic, permissionsIds } = validatedData;
+
     try {
       const result = await this.userGroupService.create(name, isStatic, permissionsIds);
       return response.status(result.status).json(result);

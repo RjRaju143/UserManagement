@@ -1,27 +1,22 @@
 import router from '@adonisjs/core/services/router'
 
+import { middleware } from "./kernel.js"
+
 const UsersController = () => import('#controllers/users_controller')
 const GroupController = () => import('#controllers/group_controller')
 
-router.get('/api', async () => {
-  return {
-    message: 'hello World',
-  }
-})
 
-router.post('/group/create', [GroupController, 'createGroup'])
+router.group(() => {
+  router.post('/create', [UsersController, 'create'])
+  router.get('/list', [UsersController, 'getAll'])
+  router.get('/:id', [UsersController, 'getById'])
+  router.put('/:id', [UsersController, 'update'])
+  // router.delete('/users/:id', [UsersController, 'delete'])
+}).prefix('/users').use(middleware.auth())
 
-router.post('/users/create', [UsersController, 'create'])
-
-router.get('/users/list', [UsersController, 'getAll'])
-
-
-// router.get('/users/:id', [UsersController, 'getById'])
-
-// router.put('/users/:id', [UsersController, 'update'])
-
-// router.delete('/users/:id', [UsersController, 'delete'])
-
-// router.get('/group/permissions', [GroupController, 'createPermissions'])
+router.group(() => {
+  router.post('/create', [GroupController, 'createGroup'])
+  // router.get('/group/permissions', [GroupController, 'createPermissions'])
+}).prefix('/group').use(middleware.auth())
 
 

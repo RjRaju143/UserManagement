@@ -59,7 +59,6 @@ export class UserService {
 
       const usersWithoutPassword = await Promise.all(users.map(async user => {
         const userGroups = await AppDataSource.manager.find(UserGroup, { where: { id: user.id }, relations: ['group'] });
-        console.log('userGroups....', userGroups)
 
         const groups = userGroups.map(ug => ({
           id: ug.group.id,
@@ -79,6 +78,32 @@ export class UserService {
     } catch (error) {
       console.error('Error fetching users:', error);
       return { status: 500, message: 'Error fetching users' };
+    }
+  }
+
+  public async getById(id: number) {
+    const user = await AppDataSource.manager.findOne(AuthUser, { where: { id } });
+    if (!user) {
+      return { status: 404, message: 'User not found' };
+    }
+    return { status: 200, user }; // Return the user data as needed
+  }
+
+  async update(userId: number, username: string, email: string, isAdmin: boolean, isStaff: boolean, isGuest: boolean, firstname: string, lastname: string, phone: number, gender: string, isActive: boolean, userType: string) {
+    try {
+      const result = await AppDataSource.manager.update(AuthUser, userId, {
+        username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType
+      })
+
+      if (result.affected === 0) {
+        return { status: 404, message: 'User not found' };
+      }
+
+      return { status: 200, message: 'User updated successfully' };
+
+    } catch (error) {
+      console.error('Error updating user:', error);
+      return { status: 500, message: 'Error updating user', error };
     }
   }
 }

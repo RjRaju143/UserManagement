@@ -1,6 +1,7 @@
 // for AdonisJS v6
 import path from "node:path";
 import url from "node:url";
+import env from '#start/env'
 
 export default {
   path: path.dirname(url.fileURLToPath(import.meta.url)) + "/../",
@@ -8,22 +9,34 @@ export default {
   info: {
     title: "Node Base Project",
     version: "1.0.0",
-    description: "",
+    description: "This is a node base project",
+  },
+  components: {
+    securitySchemas: {
+      bearerAuth: {
+        type: 'http',
+        schema: 'bearer',
+        bearerFormat: 'JWT'
+      }
+    }
   },
   snakeCase: true,
-
-  debug: false, // set to true, to get some useful debug output
+  debug: env.get('DEBUG'), // set to true, to get some useful debug output
   ignore: ["/swagger", "/docs"],
   preferredPutPatch: "PUT", // if PUT/PATCH are provided for the same route, prefer PUT
   common: {
     parameters: {}, // OpenAPI conform parameters that are commonly used
     headers: {}, // OpenAPI conform headers that are commonly used
   },
-  securitySchemes: {}, // optional
+  securitySchemes: {
+    ApiKeyAuth: {
+      type: "apiKey",
+      in: "header",
+      name: "X-API-Key"
+    }
+  }, // optional
   authMiddlewares: ["auth", "auth:api"], // optional
   defaultSecurityScheme: "BearerAuth", // optional
   persistAuthorization: true, // persist authorization between reloads on the swagger page
   showFullPath: false, // the path displayed after endpoint summary
 };
-
-
