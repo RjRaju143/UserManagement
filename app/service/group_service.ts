@@ -1,17 +1,17 @@
 import { inject } from '@adonisjs/core';
-import { AuthGroup } from '../../entity/AuthGroup.js';
-import { AppDataSource } from "../../config/data-source.js";
-import { AuthGroupPermissions } from '../../entity/Auth_group_Permissions.js';
-import { AuthPermission } from '../../entity/AuthPermission.js';
+import { AppDataSource } from "#config/database";
+
+import { AuthGroup, AuthGroupPermissions, AuthPermission } from '#models/index'
+import { CreateGroupRequest, CreateGroupResponse } from "#interface/groups_interface"
 
 @inject()
 export class UserGroupService {
-  
-  public async create(name: string, isStatic: boolean, permissionsIds: number[]) {
-    return await this.createGroup(name, isStatic, permissionsIds);
+
+  public async create({ name, isStatic, permissionsIds }: CreateGroupRequest): Promise<CreateGroupResponse> {
+    return await this.createGroup({ name, isStatic, permissionsIds });
   }
 
-  private async createGroup(name: string, isStatic: boolean, permissionsIds: number[]) {
+  private async createGroup({ name, isStatic, permissionsIds }: CreateGroupRequest): Promise<CreateGroupResponse> {
     const existingGroup = await AppDataSource.manager.findOne(AuthGroup, { where: { name } });
     if (existingGroup) {
       return { status: 409, message: `Group with this name '${name}' already exists.` };
@@ -41,3 +41,5 @@ export class UserGroupService {
     };
   }
 }
+
+

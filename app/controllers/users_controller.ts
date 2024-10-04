@@ -17,7 +17,7 @@ export default class UsersController {
   */
   public async create({ request, response }: HttpContext) {
     const { username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds } = request.body();
-    const result = await this.userService.create(username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds);
+    const result = await this.userService.create({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds });
     return response.status(result.status).json(result);
   }
 
@@ -43,10 +43,17 @@ export default class UsersController {
    */
   public async getById({ params, request, response }: HttpContext) {
     const { id } = params;
+
+    const user = request.user;
+    if (user.id !== parseInt(id)) {
+      return response.status(403).json({ message: 'Forbidden' });
+    }
+
     const validatedData = await request.validate({
       schema: UserByIdValidator,
       data: { id: Number(id) },
     });
+
     const result = await this.userService.getById(validatedData.id);
     if (result.status === 404) {
       return response.status(404).json({ message: 'User not found' });
@@ -76,10 +83,24 @@ export default class UsersController {
       return response.status(422).json({ errors: error.messages });
     }
     const { username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType } = request.body();
-    const result = await this.userService.update(id, username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType);
+    const result = await this.userService.update(id, { username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType });
     if (result.status === 404) {
       return response.status(404).json({ message: 'User not found' });
     }
+    return response.status(result.status).json(result);
+  }
+
+  /**
+   * @login
+   * @operationId login
+   * @description login a new user.
+   * @requestBody {"username":"string","password":"string"}
+   * @responseBody 201 - {"status": 200,"accessToken": "string","refreshToken": "string"}
+   * @paramUse(sortable, filterable)
+  */
+  public async login({ request, response }: HttpContext) {
+    const { username, password, email } = request.body();
+    const result = await this.userService.login({ username, password, email });
     return response.status(result.status).json(result);
   }
 }

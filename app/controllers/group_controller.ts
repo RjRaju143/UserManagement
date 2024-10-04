@@ -1,11 +1,11 @@
 import { inject } from '@adonisjs/core';
 import { HttpContext } from '@adonisjs/core/http';
 import { In } from 'typeorm';
-import { UserGroupService } from '../service/group_service.js';
-import permissions from '../../entity/userpermissions.js';
-import { AppDataSource } from "../../config/data-source.js";
-import { AuthPermission } from '../../entity/AuthPermission.js';
-import { CreateGroupValidator } from "../validator/CreateGroupValidator.js"
+
+import { AuthPermission, permissions } from "#models/index"
+import { UserGroupService } from '#service/group_service';
+import { AppDataSource } from "#config/database";
+import { CreateGroupValidator } from "#validator/CreateGroupValidator"
 
 @inject()
 export default class UserGroupsController {
@@ -20,14 +20,14 @@ export default class UserGroupsController {
    * @paramUse(sortable, filterable)
   */
   public async createGroup({ request, response }: HttpContext) {
-    
+
     const validatedData = await request.validate({
       schema: CreateGroupValidator,
     });
     const { name, isStatic, permissionsIds } = validatedData;
 
     try {
-      const result = await this.userGroupService.create(name, isStatic, permissionsIds);
+      const result = await this.userGroupService.create({ name, isStatic, permissionsIds });
       return response.status(result.status).json(result);
     } catch (error) {
       console.error('Error creating user group:', error);
@@ -35,6 +35,13 @@ export default class UserGroupsController {
     }
   }
 
+  /**
+   * @createPermissions
+   * @operationId createPermissions
+   * @description Creates a new Permissions with specified codes.
+   * @responseBody 201 - {"status": 201,"savedAuthPermissions": [{"id": 1,"name": "can change user","codename": "change_user"}]}
+   * @paramUse(sortable, filterable)
+  */
   public async createPermissions() {
     try {
       const codenames = permissions.map(p => p.codename);
@@ -49,7 +56,6 @@ export default class UserGroupsController {
       const newPermissions = permissions.filter(p => !existingCodenames.has(p.codename));
 
       if (newPermissions.length > 0) {
-        // Create new permissions
         const createdPermissions = newPermissions.map(p => {
           const authPermission = new AuthPermission();
           authPermission.name = p.name;

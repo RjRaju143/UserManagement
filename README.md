@@ -8,6 +8,7 @@ node ace list:routes
 
 npm install @adonisjs/validator
 
+npm install @types/jsonwebtoken jsonwebtoken @adonisjs/auth
 
 ### migration
 npx typeorm migration:run ----dataSource ./build/config/data-source.js
