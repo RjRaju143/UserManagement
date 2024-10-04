@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, BaseEntity } from 'typeorm';
-import { AuthPermission, AuthGroup } from "./index.ts"
+import { AuthPermission, AuthGroup } from "#models/index"
 
 @Entity('auth_group_permissions')
 export class AuthGroupPermissions extends BaseEntity {

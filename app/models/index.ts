@@ -1,7 +1,7 @@
-export { AuthGroup } from "./AuthGroup.js"
-export { AuthPermission } from "./AuthPermission.js"
-export { AuthUser } from "./AuthUser.js"
-export { AuthGroupPermissions } from "./Auth_group_Permissions.js"
-export { UserGroup } from "./UserGroup.js"
-export { permissions } from "./userpermissions.js"
+export { AuthGroup } from "#models/AuthGroup"
+export { AuthPermission } from "#models/AuthPermission"
+export { AuthUser } from "#models/AuthUser"
+export { AuthGroupPermissions } from "#models/Auth_group_Permissions"
+export { UserGroup } from "#models/UserGroup"
+export { permissions } from "#models/userpermissions"
 
