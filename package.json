@@ -57,7 +57,9 @@
     "@adonisjs/lucid": "^21.2.0",
     "@adonisjs/static": "^1.1.1",
     "@adonisjs/validator": "^13.0.2",
+    "@types/jsonwebtoken": "^9.0.7",
     "adonis-autoswagger": "^3.63.0",
+    "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.0",
     "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.20"
