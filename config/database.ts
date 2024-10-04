@@ -1,13 +1,8 @@
 import "reflect-metadata"
-import { DataSource } from "typeorm"
-// import { AuthUser } from "../entity/User.js"
-import { AuthGroup } from "../entity/AuthGroup.js"
-import { AuthPermission } from "../entity/AuthPermission.js"
-import { AuthGroupPermissions } from "../entity/Auth_group_Permissions.js"
-import { AuthUser } from "../entity/User.js"
-import { UserGroup } from "../entity/UserGroup.js"
-
 import env from '#start/env'
+
+import { DataSource } from "typeorm"
+import { AuthGroup, AuthGroupPermissions, AuthPermission, AuthUser, UserGroup } from "#models/index"
 
 export const AppDataSource = new DataSource({
     type: "postgres",

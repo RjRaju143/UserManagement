@@ -1,4 +1,3 @@
-// for AdonisJS v6
 import path from "node:path";
 import url from "node:url";
 import env from '#start/env'
@@ -11,6 +10,7 @@ export default {
     version: "1.0.0",
     description: "This is a node base project",
   },
+  url: '',
   components: {
     securitySchemas: {
       bearerAuth: {
@@ -35,8 +35,8 @@ export default {
       name: "X-API-Key"
     }
   }, // optional
-  authMiddlewares: ["auth", "auth:api"], // optional
-  defaultSecurityScheme: "BearerAuth", // optional
+  // authMiddlewares: ["auth", "auth:api"], // optional
+  // defaultSecurityScheme: "BearerAuth", // optional
   persistAuthorization: true, // persist authorization between reloads on the swagger page
-  showFullPath: false, // the path displayed after endpoint summary
+  showFullPath: true, // the path displayed after endpoint summary
 };
