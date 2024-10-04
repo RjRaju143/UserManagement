@@ -1,20 +1,15 @@
+import '@adonisjs/core/services/router'
 import router from '@adonisjs/core/services/router'
 import { middleware } from "#start/kernel"
 
 const UsersController = () => import('#controllers/users_controller')
 const GroupController = () => import('#controllers/group_controller')
 
-
-// File: types/route-extensions.d.ts
-
-import '@adonisjs/core/services/router'
-
 declare module '@adonisjs/core/services/router' {
   interface Route {
     tags(tags: string[]): this
   }
 }
-
 
 router.post('/users/login', [UsersController, 'login'])
 

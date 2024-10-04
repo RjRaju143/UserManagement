@@ -47,7 +47,6 @@ export class UserService {
     }
   }
 
-  //// TODO:
   public async getAll(): Promise<GetAllUsersResponse> {
     try {
       const users = await AppDataSource.manager.find(AuthUser);
