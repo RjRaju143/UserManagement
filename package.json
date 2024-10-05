@@ -21,6 +21,7 @@
     "#models/*": "./app/models/*.js",
     "#interface/*": "./app/interface/*.js",
     "#validator/*": "./app/validator/*.js",
+    "#helper/*": "./app/helper/*.js",
     "#mails/*": "./app/mails/*.js",
     "#services/*": "./app/services/*.js",
     "#listeners/*": "./app/listeners/*.js",

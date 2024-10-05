@@ -8,10 +8,6 @@ import { CreateGroupRequest, CreateGroupResponse } from "#interface/groups_inter
 export class UserGroupService {
 
   public async create({ name, isStatic, permissionsIds }: CreateGroupRequest): Promise<CreateGroupResponse> {
-    return await this.createGroup({ name, isStatic, permissionsIds });
-  }
-
-  private async createGroup({ name, isStatic, permissionsIds }: CreateGroupRequest): Promise<CreateGroupResponse> {
     const existingGroup = await AppDataSource.manager.findOne(AuthGroup, { where: { name } });
     if (existingGroup) {
       return { status: 409, message: `Group with this name '${name}' already exists.` };
@@ -41,5 +37,3 @@ export class UserGroupService {
     };
   }
 }
-
-

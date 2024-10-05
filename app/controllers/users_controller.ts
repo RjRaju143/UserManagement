@@ -7,17 +7,18 @@ import { UserByIdValidator, UserUpdateValidator } from '../validator/CreateGroup
 export default class UsersController {
   constructor(private userService: UserService) { }
 
+  //// TODO: /// TODO: check permissions
   /**
    * @create
    * @operationId createUserGroup
    * @description Creates a new user group with specified permissions.
    * @requestBody {"username":"string", "password":"string", "email":"string", "isAdmin":"boolean", "firstname":"string", "lastname":"string", "phone":"number", "gender":"string", "groupIds":["numbers"]}
-   * @responseBody 201 - {"username":"string", "password":"string", "email":"string@gmil.com", "isAdmin":"false", "firstname":"string", "lastname":"string", "phone":"number", "gender":"male", "groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}
+   * @responseBody 201 - {"username":"string", "password":"string", "email":"string@example.com", "isAdmin":"boolean", "firstname":"string", "lastname":"string", "phone":"number", "gender":"string", "groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}
    * @paramUse(sortable, filterable)
   */
   public async create({ request, response }: HttpContext) {
     const { username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds } = request.body();
-    const result = await this.userService.create({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds });
+    const result = await this.userService.create({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds }, request.user, request.userPermissions);
     return response.status(result.status).json(result);
   }
 
@@ -25,7 +26,7 @@ export default class UsersController {
    * @getAll
    * @operationId getAllUserGroup
    * @description getAll user group.
-   * @responseBody 200 - {"status": 200,"users": [{"id": 1,"username": "2werf234gs","email": "di25fsgvg@iadasdosgh.com","isAdmin": false,"isSuperuser": false,"isStaff": false,"isGuest": false,"isDefaultPassword": false,"firstname": "iya3sfsf25fddffdg","lastname": "zad25sffdk","phone": "9874519613","otp": "null","latitude": "0.000000","longitude": "0.000000","gender": "male","isEmailVerified": false,"isActive": false,"isPhoneVerified": false,"userType": "null","lastLogin": "null","deviceAccess": "null","address": "null","pincode": 0,"erpCode": "null","erpId": "null","groups": [{"id": 1,"name": "marvel"}],"group_ids": [1]}]}
+   * @responseBody 200 - {"status": 200,"users": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": boolean,"isStaff": boolean,"isGuest": boolean,"isDefaultPassword": boolean,"firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "string","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "string","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
    * @paramUse(sortable, filterable)
   */
   public async getAll({ response }: HttpContext) {
@@ -37,8 +38,8 @@ export default class UsersController {
    * @getById
    * @operationId getByIdUserGroup
    * @description getById user group.
-   * @requestBody {"status": 200,"users": [{"id": 1,"username": "2werf234gs","email": "di25fsgvg@iadasdosgh.com","isAdmin": false,"isSuperuser": false,"isStaff": false,"isGuest": false,"isDefaultPassword": false,"firstname": "iya3sfsf25fddffdg","lastname": "zad25sffdk","phone": "9874519613","otp": "null","latitude": "0.000000","longitude": "0.000000","gender": "male","isEmailVerified": false,"isActive": false,"isPhoneVerified": false,"userType": "null","lastLogin": "null","deviceAccess": "null","address": "null","pincode": 0,"erpCode": "null","erpId": "null","groups": [{"id": 1,"name": "marvel"}],"group_ids": [1]}]}
-   * @responseBody 200 - {"status": 200,"users": [{"id": 1,"username": "2werf234gs","email": "di25fsgvg@iadasdosgh.com","isAdmin": false,"isSuperuser": false,"isStaff": false,"isGuest": false,"isDefaultPassword": false,"firstname": "iya3sfsf25fddffdg","lastname": "zad25sffdk","phone": "9874519613","otp": "null","latitude": "0.000000","longitude": "0.000000","gender": "male","isEmailVerified": false,"isActive": false,"isPhoneVerified": false,"userType": "null","lastLogin": "null","deviceAccess": "null","address": "null","pincode": 0,"erpCode": "null","erpId": "null","groups": [{"id": 1,"name": "marvel"}],"group_ids": [1]}]}
+   * @requestBody {"status": 200,"users": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": "boolean","isStaff": "boolean","isGuest": "boolean","isDefaultPassword": "boolean","firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "male","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "string","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
+   * @responseBody 200 - {"status": 200,"users": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": "boolean","isStaff": "boolean","isGuest": "boolean","isDefaultPassword": "boolean","firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "string","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "number","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
    * @paramUse(sortable, filterable)
    */
   public async getById({ params, request, response }: HttpContext) {
@@ -66,7 +67,7 @@ export default class UsersController {
    * @operationId updateUserGroup
    * @description Creates a new user group with specified permissions.
    * @requestBody {"username":"string", "email":"string", "isAdmin":"boolean", "firstname":"string", "lastname":"string", "phone":"number", "gender":"string", "groupIds":["numbers"]}
-   * @responseBody 201 - {"username":"string", "password":"string", "email":"string@gmil.com", "isAdmin":"false", "firstname":"string", "lastname":"string", "phone":"number", "gender":"male", "groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}
+   * @responseBody 201 - {"username":"string", "password":"string", "email":"string@example.com", "isAdmin":"boolean", "firstname":"string", "lastname":"string", "phone":"number", "gender":"male", "groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}
    * @paramUse(sortable, filterable)
   */
   public async update({ params, request, response }: HttpContext) {
@@ -103,4 +104,46 @@ export default class UsersController {
     const result = await this.userService.login({ username, password, email });
     return response.status(result.status).json(result);
   }
+
+  /**
+   * @su
+   * @operationId su
+   * @description new super user.
+   * @requestBody {"username":"string","password":"string"}
+   * @responseBody 201 - {"status": 200,"message": "string"}
+   * @paramUse(sortable, filterable)
+  */
+  public async su({ request, response }: HttpContext) {
+    const { username, password } = request.body();
+    const result = await this.userService.su({ username, password });
+    return response.status(result.status).json(result);
+  }
+
+  /**
+   * @refreshToken
+   * @operationId refreshToken
+   * @description create a new accesstoken.
+   * @requestBody {"refresh":"string"}
+   * @responseBody 201 - {"status": 200,"accessToken": "string","refreshToken": "string"}
+   * @paramUse(sortable, filterable)
+  */
+  public async refreshToken({ request, response }: HttpContext) {
+    const { refresh } = request.body();
+    const result = await this.userService.refreshToken(refresh);
+    return response.status(result.status).json(result);
+  }
+
+  // /**
+  //  * @changepassword
+  //  * @operationId changepassword
+  //  * @description changepassword for user.
+  //  * @requestBody {"old_password":"string","password":"string"}
+  //  * @responseBody 201 - {"status": 200,"updatedPassword": "string"}
+  //  * @paramUse(sortable, filterable)
+  // */
+  // public async changepassword({ request, response }: HttpContext) {
+  //   const { refresh } = request.body();
+  //   const result = await this.userService.updatedPassword(refresh);
+  //   return response.status(result.status).json(result);
+  // }
 }

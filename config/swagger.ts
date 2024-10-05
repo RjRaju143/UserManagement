@@ -10,7 +10,6 @@ export default {
     version: "1.0.0",
     description: "This is a node base project",
   },
-  url: '',
   components: {
     securitySchemas: {
       bearerAuth: {

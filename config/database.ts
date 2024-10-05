@@ -2,7 +2,7 @@ import "reflect-metadata"
 import env from '#start/env'
 
 import { DataSource } from "typeorm"
-import { AuthGroup, AuthGroupPermissions, AuthPermission, AuthUser, UserGroup } from "#models/index"
+import { AuthGroup, AuthGroupPermissions, AuthPermission, AuthUser, UserGroup, AuthToken } from "#models/index"
 
 export const AppDataSource = new DataSource({
     type: "postgres",
@@ -12,7 +12,7 @@ export const AppDataSource = new DataSource({
     password: env.get('DB_PASS'),
     database: env.get('DB_NAME'),
     logging: env.get('DEBUG'),
-    entities: [AuthGroup, AuthPermission, AuthGroupPermissions, AuthUser, UserGroup],
+    entities: [AuthGroup, AuthPermission, AuthGroupPermissions, AuthUser, UserGroup, AuthToken],
     subscribers: [],
     synchronize: env.get('DEBUG'),
 })

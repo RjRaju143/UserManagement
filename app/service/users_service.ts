@@ -1,50 +1,37 @@
+import hashing from '@adonisjs/core/services/hash';
+import logger from '@adonisjs/core/services/logger';
 import jwt from 'jsonwebtoken';
 import { AppDataSource } from "#config/database";
 import { jwtConfig } from "#config/jwt";
-import hashing from '@adonisjs/core/services/hash';
-import logger from '@adonisjs/core/services/logger';
-
-import { AuthGroup, AuthUser, UserGroup } from "#models/index"
-import { CreateUserRequest, CreateUserResponse, GetAllUsersResponse, LoginResponse, UpdateUserRequest, LoginRequest } from "#interface/user_interface"
+import { AuthUser, UserGroup, AuthToken } from "#models/index"
+import { CreateUserRequest, CreateUserResponse, GetAllUsersResponse, LoginResponse, UpdateUserRequest, LoginRequest, SuperUserRequest, SuperUserResponce } from "#interface/user_interface"
+import { RefreshTokenResponse } from "#interface/tokens_interface"
+import { createToken, checkUserPermissions } from "#helper/users.helpers"
+import { UserCreationService } from "#service/UserCreate"
 
 export class UserService {
-  public async create({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds }: CreateUserRequest): Promise<CreateUserResponse> {
-    try {
-      const hashedPassword = await hashing.make(password);
-      const userData = { username, password: hashedPassword, email, isAdmin, firstname, lastname, phone, gender };
-      const newUser = AppDataSource.manager.create(AuthUser, userData);
-      const newUserSavedData = await AppDataSource.manager.save(newUser);
+  private userCreationService: UserCreationService;
 
-      const userGroupsPromises = groupIds.map(async (groupId) => {
-        const authGroup = await AppDataSource.manager.findOne(AuthGroup, { where: { id: groupId } });
-        if (authGroup) {
-          const userGroup = AppDataSource.manager.create(UserGroup, { group: authGroup, user: newUserSavedData });
-          await AppDataSource.manager.save(userGroup);
-          return { id: authGroup.id, name: authGroup.name };
-        }
-        logger.error(`Group with id ${groupId} not found.`);
-        return null;
-      });
+  constructor() {
+    this.userCreationService = new UserCreationService();
+  }
 
-      const userGroups = await Promise.all(userGroupsPromises);
-      const validUserGroups = userGroups.filter((group): group is { id: number; name: string } => group !== null);
+  public async create(
+    { username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds }: CreateUserRequest,
+    user: { isAdmin: boolean; is_superuser: boolean },
+    userPermissions: { codename: string }[]
+  ): Promise<CreateUserResponse> {
 
-      return {
-        status: 201,
-        username: newUserSavedData.username,
-        email: newUserSavedData.email,
-        isAdmin: newUserSavedData.isAdmin,
-        firstname: newUserSavedData.firstname,
-        lastname: newUserSavedData.lastname,
-        phone: newUserSavedData.phone,
-        gender: newUserSavedData.gender,
-        groups: validUserGroups,
-        group_ids: validUserGroups.map(group => group.id),
-      };
-    } catch (error) {
-      logger.error('Error creating user:', error);
-      return { status: 500, message: 'Error creating user' };
+    if (userPermissions) {
+      const hasGroupsPermission = await checkUserPermissions(userPermissions.map(p => p.codename), 'add_user');
+      if (user.isAdmin || hasGroupsPermission) {
+        return await this.userCreationService.createUser({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds });
+      }
+    } else if (user.is_superuser) {
+      return await this.userCreationService.createUser({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds });
     }
+
+    return { status: 403, message: "Forbidden" };
   }
 
   public async getAll(): Promise<GetAllUsersResponse> {
@@ -109,23 +96,81 @@ export class UserService {
           { email }
         ]
       });
+
       if (!userExist) {
         return { status: 404, message: 'User not found' };
       }
+
       const isPasswordValid = await hashing.verify(userExist.password, password);
-      if (isPasswordValid) {
-        const accessToken = jwt.sign({ id: userExist.id, userType: userExist.userType }, jwtConfig.jwt.secret, {
-          expiresIn: jwtConfig.jwt.accessTokenExpiresIn
-        });
-        const refreshToken = jwt.sign({ id: userExist.id, userType: userExist.userType }, jwtConfig.jwt.secret, {
-          expiresIn: jwtConfig.jwt.refreshTokenExpiresIn
-        });
-        return { status: 200, accessToken, refreshToken };
+      if (!isPasswordValid) {
+        return { status: 400, message: "User or Password Incorrect" };
       }
-      return { status: 401, message: 'Invalid credentials' };
+
+      const tokens = await createToken({ id: userExist.id, userType: userExist.userType });
+
+      if ('accessToken' in tokens && 'refreshToken' in tokens) {
+        return { status: 200, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
+      } else {
+        logger.error('Token creation error:', tokens);
+        return { status: 500, message: 'Error creating tokens' };
+      }
     } catch (error) {
       logger.error('Error during login:', error);
       return { status: 500, message: 'Internal Server Error' };
     }
   }
+
+  public async su({ username, password, }: SuperUserRequest): Promise<SuperUserResponce> {
+    try {
+      const userExist = await AppDataSource.manager.findOne(AuthUser, {
+        where: [
+          { username }
+        ]
+      });
+      if (userExist) {
+        return { status: 400, message: 'User already exist' };
+      }
+      const hashedPassword = await hashing.make(password);
+      const userData = { username, password: hashedPassword, isSuperuser: true, isAdmin: true, userType: "su" };
+      const newUser = AppDataSource.manager.create(AuthUser, userData);
+      await AppDataSource.manager.save(newUser);
+      return { status: 201, message: "User Created" };
+    } catch (error) {
+      logger.error('Error during login:', error);
+      return { status: 500, message: 'Internal Server Error' };
+    }
+  }
+
+  public async refreshToken(refresh: string): Promise<RefreshTokenResponse> {
+    try {
+      const token = await AppDataSource.manager.findOne(AuthToken, { where: { refreshToken: refresh } });
+
+      if (!token) {
+        return { status: 400, message: "Unauthorized" };
+      }
+
+      if (!token.refreshToken) {
+        return { status: 400, message: "Refresh token is missing" };
+      }
+
+      const decoded = jwt.verify(token.refreshToken, jwtConfig.jwt.secret) as { id: number; userType: string };
+
+      const newAccessToken = jwt.sign({ id: decoded.id, userType: decoded.userType }, jwtConfig.jwt.secret, {
+        expiresIn: jwtConfig.jwt.accessTokenExpiresIn,
+      });
+
+      const updateResult = await AppDataSource.manager.update(AuthToken, { user: { id: token.user?.id } }, { accessToken: newAccessToken });
+
+      if (updateResult.affected === 0) {
+        throw new Error('Token not found');
+      }
+
+      return { status: 201, accessToken: newAccessToken };
+
+    } catch (error) {
+      logger.error('Error refreshing token:', error);
+      return { status: 500, message: 'Internal Server Error' };
+    }
+  }
 }
+

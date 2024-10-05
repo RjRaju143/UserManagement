@@ -23,4 +23,3 @@ export class AuthGroup extends BaseEntity {
     @Column({ type: 'boolean', default: false })
     is_delete: boolean;
 }
-

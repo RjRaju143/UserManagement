@@ -56,3 +56,14 @@ export interface LoginRequest {
   password: string;
   email: string;
 }
+
+export interface SuperUserRequest {
+  username: string;
+  password: string;
+}
+
+export interface SuperUserResponce {
+  status: number;
+  message: string;
+}
+

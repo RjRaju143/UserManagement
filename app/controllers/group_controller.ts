@@ -15,8 +15,8 @@ export default class UserGroupsController {
    * @createGroup
    * @operationId createGroup
    * @description Creates a new user group with specified permissions.
-   * @requestBody {"name": "stringOne","isStatic": false,"permissionsIds": [1, 2, 3]}
-   * @responseBody 201 - {"name": "stringOne","isStatic": false,"permissionsIds": [1, 2, 3]}
+   * @requestBody {"name": "string","isStatic": "boolean","permissionsIds": ["number"]}
+   * @responseBody 201 - {"name": "string","isStatic": "boolean","permissionsIds": ["number"]}
    * @paramUse(sortable, filterable)
   */
   public async createGroup({ request, response }: HttpContext) {
@@ -39,7 +39,7 @@ export default class UserGroupsController {
    * @createPermissions
    * @operationId createPermissions
    * @description Creates a new Permissions with specified codes.
-   * @responseBody 201 - {"status": 201,"savedAuthPermissions": [{"id": 1,"name": "can change user","codename": "change_user"}]}
+   * @responseBody 201 - {"status": 201,"savedAuthPermissions": [{"id": "number","name": "string","codename": "string"}]}
    * @paramUse(sortable, filterable)
   */
   public async createPermissions() {
