@@ -7,7 +7,6 @@ import { UserByIdValidator, UserUpdateValidator } from '../validator/CreateGroup
 export default class UsersController {
   constructor(private userService: UserService) { }
 
-  //// TODO: /// TODO: check permissions
   /**
    * @create
    * @operationId createUserGroup
