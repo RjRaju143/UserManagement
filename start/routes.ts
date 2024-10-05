@@ -13,15 +13,11 @@ router.post('/token/refresh', [UsersController, 'refreshToken']).prefix('/users'
 
 router.group(() => {
   router.post('/create', [UsersController, 'create'])
-  //// TODO:
   router.get('/list', [UsersController, 'getAll'])
-  //// TODO:
   router.get('/:id', [UsersController, 'getById'])
-  //// TODO:
   router.put('/:id', [UsersController, 'update'])
 }).prefix('/users').use(middleware.authenticate()).use(middleware.permissions())
 
-//// TODO:
 router.group(() => {
   router.post('/create', [GroupController, 'createGroup'])
   router.get('/permissions', [GroupController, 'createPermissions'])
