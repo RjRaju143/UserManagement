@@ -40,7 +40,7 @@ export class UserCreationService {
                 groups: validUserGroups,
                 group_ids: validUserGroups.map(group => group.id),
             };
-        } catch (error) {
+        } catch (error: unknown) {
             logger.error('Error creating user:', error);
             return { status: 500, message: 'Error creating user' };
         }

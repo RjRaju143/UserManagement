@@ -28,9 +28,33 @@ export default class UsersController {
    * @responseBody 200 - {"status": 200,"users": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": boolean,"isStaff": boolean,"isGuest": boolean,"isDefaultPassword": boolean,"firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "string","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "string","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
    * @paramUse(sortable, filterable)
   */
-  public async getAll({ response }: HttpContext) {
-    const result = await this.userService.getAll();
-    return response.status(result.status).json(result);
+  // public async getAll({ request, response }: HttpContext) {
+  //   const result = await this.userService.getAll(request.user, request.userPermissions);
+  //   return response.status(result.status).json(result);
+  // }
+  public async getAll({ request, response }: HttpContext) {
+    const { search, page = '1', page_size = '10' } = request.qs();
+
+    // Ensure search is a string
+    const searchTerm = Array.isArray(search) ? search[0] : search;
+
+    // Parse page and page_size, use default values if parsing fails
+    const parsedPage = parseInt(page as string, 10) || 1;
+    const parsedPageSize = parseInt(page_size as string, 10) || 10;
+
+    try {
+      const result = await this.userService.getAll(
+        request.user,
+        request.userPermissions,
+        searchTerm,
+        parsedPage,
+        parsedPageSize
+      );
+      return response.status(result.status).json(result);
+    } catch (error) {
+      console.error('Error in getAll controller method:', error);
+      return response.status(500).json({ status: 500, message: 'Internal Server Error' });
+    }
   }
 
   /**
@@ -44,17 +68,12 @@ export default class UsersController {
   public async getById({ params, request, response }: HttpContext) {
     const { id } = params;
 
-    const user = request.user;
-    if (user.id !== parseInt(id)) {
-      return response.status(403).json({ message: 'Forbidden' });
-    }
-
     const validatedData = await request.validate({
       schema: UserByIdValidator,
       data: { id: Number(id) },
     });
 
-    const result = await this.userService.getById(validatedData.id);
+    const result = await this.userService.getById(validatedData.id, request.user, request.userPermissions);
     if (result.status === 404) {
       return response.status(404).json({ message: 'User not found' });
     }
@@ -83,10 +102,7 @@ export default class UsersController {
       return response.status(422).json({ errors: error.messages });
     }
     const { username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType } = request.body();
-    const result = await this.userService.update(id, { username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType });
-    if (result.status === 404) {
-      return response.status(404).json({ message: 'User not found' });
-    }
+    const result = await this.userService.update(id, { username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType }, request.user, request.userPermissions);
     return response.status(result.status).json(result);
   }
 
@@ -131,18 +147,4 @@ export default class UsersController {
     const result = await this.userService.refreshToken(refresh);
     return response.status(result.status).json(result);
   }
-
-  // /**
-  //  * @changepassword
-  //  * @operationId changepassword
-  //  * @description changepassword for user.
-  //  * @requestBody {"old_password":"string","password":"string"}
-  //  * @responseBody 201 - {"status": 200,"updatedPassword": "string"}
-  //  * @paramUse(sortable, filterable)
-  // */
-  // public async changepassword({ request, response }: HttpContext) {
-  //   const { refresh } = request.body();
-  //   const result = await this.userService.updatedPassword(refresh);
-  //   return response.status(result.status).json(result);
-  // }
 }

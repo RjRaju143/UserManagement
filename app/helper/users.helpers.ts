@@ -30,13 +30,25 @@ export const createToken = async (data: TokenData): Promise<TokenResponce | Erro
     }
 };
 
+///////
 export const checkUserPermissions = async (userPermissions: string[], code: string): Promise<boolean> => {
     try {
-        const authPermissions = await AppDataSource.manager.find(AuthPermission);
+        // Fetch the relevant permissions from the database
+        const authPermissions = await AppDataSource.manager.find(AuthPermission, { where: { codename: code } });
+        console.log({ authPermissions });
+
+        // Extract valid codenames from the fetched permissions
         const validCodenames = new Set(authPermissions.map(p => p.codename));
-        const userPermissionCodenames = userPermissions;
-        const hasGroupsPermission = userPermissionCodenames.includes(code) &&
-            userPermissionCodenames.every(codename => validCodenames.has(codename));
+        console.log({ validCodenames });
+
+        // Log the user's permissions for comparison
+        console.log({ userPermissions });
+
+        // Check if the user has the required permission
+        const hasGroupsPermission = userPermissions.includes(code);
+        console.log({ hasGroupsPermission });
+        console.log({ code });
+
         return hasGroupsPermission;
     } catch (error) {
         logger.error('Error checking user permissions:', error);

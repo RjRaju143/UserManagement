@@ -27,7 +27,11 @@ export interface CreateUserResponse {
 export interface GetAllUsersResponse {
   status: number;
   results?: Array<{}>;
-  error?: any;
+  message?: any;
+  total?: number;
+  page?: number;
+  page_size?: number;
+  total_pages?: number;
 }
 
 export interface UpdateUserRequest {
@@ -66,4 +70,12 @@ export interface SuperUserResponce {
   status: number;
   message: string;
 }
+
+export interface User {
+  id?: any;
+  isAdmin: boolean;
+  isSuperuser: boolean;
+}
+
+export type UserPermissions = string[];
 

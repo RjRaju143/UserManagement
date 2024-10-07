@@ -4,10 +4,11 @@ import jwt from 'jsonwebtoken';
 import { AppDataSource } from "#config/database";
 import { jwtConfig } from "#config/jwt";
 import { AuthUser, UserGroup, AuthToken } from "#models/index"
-import { CreateUserRequest, CreateUserResponse, GetAllUsersResponse, LoginResponse, UpdateUserRequest, LoginRequest, SuperUserRequest, SuperUserResponce } from "#interface/user_interface"
+import { CreateUserRequest, CreateUserResponse, GetAllUsersResponse, LoginResponse, UpdateUserRequest, LoginRequest, SuperUserRequest, SuperUserResponce, User, UserPermissions } from "#interface/user_interface"
 import { RefreshTokenResponse } from "#interface/tokens_interface"
-import { createToken, checkUserPermissions } from "#helper/users.helpers"
+import { createToken } from "#helper/users.helpers"
 import { UserCreationService } from "#service/UserCreate"
+import { In, Like } from 'typeorm';
 
 export class UserService {
   private userCreationService: UserCreationService;
@@ -17,71 +18,209 @@ export class UserService {
   }
 
   public async create(
-    { username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds }: CreateUserRequest,
-    user: { isAdmin: boolean; is_superuser: boolean },
-    userPermissions: { codename: string }[]
-  ): Promise<CreateUserResponse> {
+    { username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds }: CreateUserRequest, user: User, userPermissions: UserPermissions): Promise<CreateUserResponse> {
 
-    if (userPermissions) {
-      const hasGroupsPermission = await checkUserPermissions(userPermissions.map(p => p.codename), 'add_user');
-      if (user.isAdmin || hasGroupsPermission) {
-        return await this.userCreationService.createUser({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds });
-      }
-    } else if (user.is_superuser) {
+    if (user.isSuperuser) {
+      return await this.userCreationService.createUser({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds });
+    }
+
+    if (user.isAdmin || userPermissions.includes('view_user')) {
       return await this.userCreationService.createUser({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds });
     }
 
     return { status: 403, message: "Forbidden" };
   }
 
-  public async getAll(): Promise<GetAllUsersResponse> {
+  public async getAll(user: User, userPermissions: UserPermissions, search: string | undefined, page: number, page_size: number): Promise<GetAllUsersResponse> {
+    console.log('Search:', search, 'Page:', page, 'Page Size:', page_size);
     try {
-      const users = await AppDataSource.manager.find(AuthUser);
-      const usersWithoutPassword = await Promise.all(users.map(async user => {
-        const userGroups = await AppDataSource.manager.find(UserGroup, {
-          where: { id: user.id },
-          relations: ['group']
+      const skip = (page - 1) * page_size;
+
+      const searchCondition = search
+        ? [
+          { username: Like(`%${search}%`) },
+          { email: Like(`%${search}%`) },
+          { firstname: Like(`%${search}%`) },
+          { lastname: Like(`%${search}%`) }
+        ]
+        : {};
+
+      if (user.isSuperuser) {
+        const [users, total] = await AppDataSource.manager.findAndCount(AuthUser, {
+          where: searchCondition,
+          skip,
+          take: page_size,
+          order: { username: 'ASC' } // Add ordering if needed
         });
-        const groups = userGroups.map(ug => ({
-          id: ug.group.id,
-          name: ug.group.name
-        }));
-        const { password, ...userWithoutPassword } = user;
+
+        const usersWithoutPassword = users.map(user => {
+          const { password, ...userWithoutPassword } = user;
+          return userWithoutPassword;
+        });
 
         return {
-          ...userWithoutPassword,
-          groups,
-          group_ids: groups.map(group => group.id),
+          status: 200,
+          results: usersWithoutPassword,
+          total,
+          page,
+          page_size,
+          total_pages: Math.ceil(total / page_size)
         };
-      }));
-
-      return { status: 200, results: usersWithoutPassword };
-    } catch (error) {
-      logger.error('Error fetching users:', error);
-      return { status: 500, error: 'Error fetching users' };
-    }
-  }
-
-  public async getById(id: number) {
-    const user = await AppDataSource.manager.findOne(AuthUser, { where: { id } });
-    if (!user) {
-      return { status: 404, message: 'User not found' };
-    }
-    return { status: 200, user };
-  }
-
-  public async update(userId: number, { username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType }: UpdateUserRequest) {
-    try {
-      const result = await AppDataSource.manager.update(AuthUser, userId, {
-        username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType
-      });
-
-      if (result.affected === 0) {
-        return { status: 404, message: 'User not found' };
       }
 
-      return { status: 200, message: 'User updated successfully' };
+      if (user.isAdmin || userPermissions.includes('view_user')) {
+        const userGroups = await AppDataSource.manager.find(UserGroup, {
+          where: { user: { id: user.id } },
+          relations: ['group']
+        });
+        if (userGroups.length === 0) {
+          return { status: 404, message: 'User is not a member of any group' };
+        }
+        const groupIds = userGroups.map(ug => ug.group.id);
 
+        const [usersInGroups, total] = await AppDataSource.manager.findAndCount(UserGroup, {
+          where: {
+            group: { id: In(groupIds) },
+            user: searchCondition
+          },
+          relations: ['user', 'group'],
+          skip,
+          take: page_size,
+        });
+
+        const uniqueUsers = new Map();
+        usersInGroups.forEach(ug => {
+          const { password, ...userWithoutPassword } = ug.user;
+          if (!uniqueUsers.has(userWithoutPassword.id)) {
+            uniqueUsers.set(userWithoutPassword.id, {
+              ...userWithoutPassword,
+              groups: [],
+              group_ids: []
+            });
+          }
+
+          const groupInfo = {
+            id: ug.group.id,
+            name: ug.group.name
+          };
+          uniqueUsers.get(userWithoutPassword.id).groups.push(groupInfo);
+          uniqueUsers.get(userWithoutPassword.id).group_ids.push(ug.group.id);
+        });
+
+        return {
+          status: 200,
+          results: Array.from(uniqueUsers.values()),
+          total,
+          page,
+          page_size,
+          total_pages: Math.ceil(total / page_size)
+        };
+      }
+      return { status: 403, message: "Forbidden" };
+    } catch (error: unknown) {
+      logger.error('Error in getAll service method:', error);
+      return { status: 500, message: 'Error updating user' };
+    }
+  }
+
+  public async getById(id: number, user: User, userPermissions: UserPermissions) {
+    if (user.isSuperuser) {
+      const userById = await AppDataSource.manager.findOne(AuthUser, { where: { id } });
+      if (!userById) {
+        return { status: 404, message: 'User not found' };
+      }
+      const userGroups = await AppDataSource.manager.find(UserGroup, { where: { user: { id: userById.id } } });
+      const groups = userGroups.map(userGroup => ({
+        id: userGroup.group.id,
+        name: userGroup.group.name
+      }));
+      const groupIds = userGroups.map(userGroup => userGroup.group.id);
+      return {
+        status: 200,
+        ...userById,
+        groups,
+        group_ids: groupIds
+      };
+    }
+
+    if (user.isAdmin || userPermissions.includes('view_user')) {
+      const userGroups = await AppDataSource.manager.find(UserGroup, { where: { user: { id: user.id } } });
+
+      if (!userGroups || userGroups.length === 0) {
+        return { status: 404, message: 'User is not a member of any group' };
+      }
+
+      const groupIds = userGroups.map(group => group.group.id);
+
+      const usersInGroup = await AppDataSource.manager.find(UserGroup, {
+        where: { group: { id: In(groupIds) } },
+        relations: ['user']
+      });
+
+      const users = usersInGroup.map(userGroup => userGroup.user);
+      const requestedUserInGroup = users.find(u => u.id === id);
+
+      if (requestedUserInGroup) {
+        const groups = userGroups.map(userGroup => ({
+          id: userGroup.group.id,
+          name: userGroup.group.name
+        }));
+
+        return {
+          status: 200,
+          ...requestedUserInGroup,
+          groups,
+          group_ids: groupIds
+        };
+      } else {
+        return { status: 403, message: "You do not have permission to view this user" };
+      }
+    }
+
+    return { status: 403, message: "Forbidden" };
+  }
+
+  public async update(userId: number, { username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType }: UpdateUserRequest, user: User, userPermissions: UserPermissions) {
+    try {
+      if (user.isSuperuser) {
+        const result = await AppDataSource.manager.update(AuthUser, userId, {
+          username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType
+        });
+
+        if (result.affected === 0) {
+          return { status: 404, message: 'User not found' };
+        }
+
+        return { status: 200, message: 'User updated successfully' };
+      }
+
+      if (user.isAdmin || userPermissions.includes('edit_user')) {
+        const userGroups = await AppDataSource.manager.find(UserGroup, {
+          where: { user: { id: user.id } },
+          relations: ['group']
+        });
+        const groupIds = userGroups.map(ug => ug.group.id);
+        const targetUserGroups = await AppDataSource.manager.find(UserGroup, {
+          where: { user: { id: userId } },
+          relations: ['group']
+        });
+        const targetGroupIds = targetUserGroups.map(ug => ug.group.id);
+        const hasSameGroup = targetGroupIds.some(id => groupIds.includes(id));
+        if (!hasSameGroup) {
+          return { status: 403, message: "Forbidden: You cannot update this user as they are not in the same group." };
+        }
+
+        const result = await AppDataSource.manager.update(AuthUser, userId, {
+          username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType
+        });
+        if (result.affected === 0) {
+          return { status: 404, message: 'User not found' };
+        }
+
+        return { status: 200, message: 'User updated successfully' };
+      }
+
+      return { status: 403, message: "Forbidden" };
     } catch (error) {
       logger.error('Error updating user:', error);
       return { status: 500, message: 'Error updating user' };
@@ -135,7 +274,7 @@ export class UserService {
       const newUser = AppDataSource.manager.create(AuthUser, userData);
       await AppDataSource.manager.save(newUser);
       return { status: 201, message: "User Created" };
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Error during login:', error);
       return { status: 500, message: 'Internal Server Error' };
     }
@@ -167,7 +306,7 @@ export class UserService {
 
       return { status: 201, accessToken: newAccessToken };
 
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Error refreshing token:', error);
       return { status: 500, message: 'Internal Server Error' };
     }
