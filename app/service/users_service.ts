@@ -6,7 +6,7 @@ import { jwtConfig } from "#config/jwt";
 import { AuthUser, UserGroup, AuthToken } from "#models/index"
 import { CreateUserRequest, CreateUserResponse, GetAllUsersResponse, LoginResponse, UpdateUserRequest, LoginRequest, SuperUserRequest, SuperUserResponce, User, UserPermissions } from "#interface/user_interface"
 import { RefreshTokenResponse } from "#interface/tokens_interface"
-import { createToken } from "#helper/users.helpers"
+import { createToken, handleGroupUpdates } from "#helper/users.helpers"
 import { UserCreationService } from "#service/UserCreate"
 import { In, Like } from 'typeorm';
 
@@ -17,18 +17,21 @@ export class UserService {
     this.userCreationService = new UserCreationService();
   }
 
-  public async create(
-    { username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds }: CreateUserRequest, user: User, userPermissions: UserPermissions): Promise<CreateUserResponse> {
+  public async create({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds }: CreateUserRequest, user: User, userPermissions: UserPermissions): Promise<CreateUserResponse> {
+    try {
+      if (user.isSuperuser) {
+        return await this.userCreationService.createUser({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds });
+      }
 
-    if (user.isSuperuser) {
-      return await this.userCreationService.createUser({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds });
+      if (user.isAdmin || userPermissions.includes('view_user')) {
+        return await this.userCreationService.createUser({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds });
+      }
+
+      return { status: 403, message: "Forbidden" };
+    } catch (error: unknown) {
+      logger.error('Internal Server Error', error);
+      return { status: 500, message: 'Internal Server Error' };
     }
-
-    if (user.isAdmin || userPermissions.includes('view_user')) {
-      return await this.userCreationService.createUser({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds });
-    }
-
-    return { status: 403, message: "Forbidden" };
   }
 
   public async getAll(user: User, userPermissions: UserPermissions, search: string | undefined, page: number, page_size: number): Promise<GetAllUsersResponse> {
@@ -118,8 +121,8 @@ export class UserService {
       }
       return { status: 403, message: "Forbidden" };
     } catch (error: unknown) {
-      logger.error('Error in getAll service method:', error);
-      return { status: 500, message: 'Error updating user' };
+      logger.error('Internal Server Error', error);
+      return { status: 500, message: 'Internal Server Error' };
     }
   }
 
@@ -180,49 +183,59 @@ export class UserService {
     return { status: 403, message: "Forbidden" };
   }
 
-  public async update(userId: number, { username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType }: UpdateUserRequest, user: User, userPermissions: UserPermissions) {
+  public async update(
+    userId: number,
+    { username, email, isAdmin, firstname, lastname, phone, gender, userType, groupIds }: UpdateUserRequest,
+    user: User,
+    userPermissions: UserPermissions
+  ) {
     try {
       if (user.isSuperuser) {
         const result = await AppDataSource.manager.update(AuthUser, userId, {
-          username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType
+          username, email, isAdmin, firstname, lastname, phone, gender, userType
         });
 
         if (result.affected === 0) {
           return { status: 404, message: 'User not found' };
         }
 
+        await handleGroupUpdates(userId, groupIds);
         return { status: 200, message: 'User updated successfully' };
       }
 
-      if (user.isAdmin || userPermissions.includes('edit_user')) {
+      if (user.isAdmin || userPermissions.includes('change_user')) {
         const userGroups = await AppDataSource.manager.find(UserGroup, {
           where: { user: { id: user.id } },
           relations: ['group']
         });
-        const groupIds = userGroups.map(ug => ug.group.id);
+        const groupIdsUser = userGroups.map(ug => ug.group.id);
+
         const targetUserGroups = await AppDataSource.manager.find(UserGroup, {
           where: { user: { id: userId } },
           relations: ['group']
         });
         const targetGroupIds = targetUserGroups.map(ug => ug.group.id);
-        const hasSameGroup = targetGroupIds.some(id => groupIds.includes(id));
+
+        const hasSameGroup = targetGroupIds.some(id => groupIdsUser.includes(id));
         if (!hasSameGroup) {
           return { status: 403, message: "Forbidden: You cannot update this user as they are not in the same group." };
         }
 
         const result = await AppDataSource.manager.update(AuthUser, userId, {
-          username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType
+          username, email, isAdmin, firstname, lastname, phone, gender, userType
         });
         if (result.affected === 0) {
           return { status: 404, message: 'User not found' };
         }
 
+        await handleGroupUpdates(userId, groupIds);
         return { status: 200, message: 'User updated successfully' };
       }
 
       return { status: 403, message: "Forbidden" };
-    } catch (error) {
-      logger.error('Error updating user:', error);
+
+    } catch (error: unknown) {
+      console.error('Error updating user:', error);
       return { status: 500, message: 'Error updating user' };
     }
   }

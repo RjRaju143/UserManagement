@@ -37,15 +37,16 @@ export interface GetAllUsersResponse {
 export interface UpdateUserRequest {
   username: string;
   email: string;
-  isAdmin: boolean;
-  isStaff: boolean;
-  isGuest: boolean;
+  isAdmin?: boolean;
+  isStaff?: boolean;
+  isGuest?: boolean;
   firstname: string;
   lastname: string;
   phone: number;
   gender: string;
-  isActive: boolean;
+  isActive?: boolean;
   userType: string;
+  groupIds: any;
 }
 
 export interface LoginResponse {

@@ -18,6 +18,7 @@ router.group(() => {
   router.put('/:id', [UsersController, 'update'])
 }).prefix('/users').use(middleware.authenticate()).use(middleware.permissions())
 
+//// TODO:
 router.group(() => {
   router.post('/create', [GroupController, 'createGroup'])
   router.get('/permissions', [GroupController, 'createPermissions'])

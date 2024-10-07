@@ -1,7 +1,7 @@
 import { inject } from '@adonisjs/core';
 import type { HttpContext } from '@adonisjs/core/http';
 import { UserService } from '../service/users_service.js';
-import { UserByIdValidator, UserUpdateValidator } from '../validator/CreateGroupValidator.js';
+import { UserByIdValidator, UserUpdateValidator } from '#validator/CreateGroupValidator';
 
 @inject()
 export default class UsersController {
@@ -23,22 +23,20 @@ export default class UsersController {
 
   /**
    * @getAll
-   * @operationId getAllUserGroup
+   * @operationId getAll
    * @description getAll user group.
-   * @responseBody 200 - {"status": 200,"users": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": boolean,"isStaff": boolean,"isGuest": boolean,"isDefaultPassword": boolean,"firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "string","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "string","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
-   * @paramUse(sortable, filterable)
-  */
-  // public async getAll({ request, response }: HttpContext) {
-  //   const result = await this.userService.getAll(request.user, request.userPermissions);
-  //   return response.status(result.status).json(result);
-  // }
+   * @queryParam {string} [search] - Optional search term to filter users by username, email, firstname, or lastname.
+   * @queryParam {number} [page] - Optional search term to filter page.
+   * @queryParam {number} [page_size] - Optional search term to filter page_size.
+   * @requestBody {"status": 200,"users": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": "boolean","isStaff": "boolean","isGuest": "boolean","isDefaultPassword": "boolean","firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "male","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "string","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
+   * @responseBody 200 - {"status": 200,"users": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": "boolean","isStaff": "boolean","isGuest": "boolean","isDefaultPassword": "boolean","firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "string","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "number","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
+  * @paramUse(sortable, filterable)
+   */
   public async getAll({ request, response }: HttpContext) {
     const { search, page = '1', page_size = '10' } = request.qs();
 
-    // Ensure search is a string
     const searchTerm = Array.isArray(search) ? search[0] : search;
 
-    // Parse page and page_size, use default values if parsing fails
     const parsedPage = parseInt(page as string, 10) || 1;
     const parsedPageSize = parseInt(page_size as string, 10) || 10;
 
@@ -67,16 +65,11 @@ export default class UsersController {
    */
   public async getById({ params, request, response }: HttpContext) {
     const { id } = params;
-
     const validatedData = await request.validate({
       schema: UserByIdValidator,
       data: { id: Number(id) },
     });
-
     const result = await this.userService.getById(validatedData.id, request.user, request.userPermissions);
-    if (result.status === 404) {
-      return response.status(404).json({ message: 'User not found' });
-    }
     return response.status(result.status).json(result);
   }
 
@@ -101,8 +94,8 @@ export default class UsersController {
     } catch (error) {
       return response.status(422).json({ errors: error.messages });
     }
-    const { username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType } = request.body();
-    const result = await this.userService.update(id, { username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType }, request.user, request.userPermissions);
+    const { username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType, groupIds } = request.body();
+    const result = await this.userService.update(id, { username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType, groupIds }, request.user, request.userPermissions);
     return response.status(result.status).json(result);
   }
 

@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import logger from '@adonisjs/core/services/logger';
-import { AuthPermission, AuthToken } from '#models/index';
+import { AuthGroup, AuthToken, UserGroup } from '#models/index';
 import { jwtConfig } from '#config/jwt';
 import { AppDataSource } from '#config/database';
 import { TokenData, TokenResponce } from "#interface/tokens_interface"
@@ -30,28 +30,39 @@ export const createToken = async (data: TokenData): Promise<TokenResponce | Erro
     }
 };
 
-///////
-export const checkUserPermissions = async (userPermissions: string[], code: string): Promise<boolean> => {
-    try {
-        // Fetch the relevant permissions from the database
-        const authPermissions = await AppDataSource.manager.find(AuthPermission, { where: { codename: code } });
-        console.log({ authPermissions });
+export const handleGroupUpdates = async (userId: number, groupIds: string[]) => {
+    const parsedGroupIds = groupIds.flatMap(id => id.split(',').map(Number).filter(n => !isNaN(n)));
 
-        // Extract valid codenames from the fetched permissions
-        const validCodenames = new Set(authPermissions.map(p => p.codename));
-        console.log({ validCodenames });
+    console.log('Parsed group IDs:', parsedGroupIds);
 
-        // Log the user's permissions for comparison
-        console.log({ userPermissions });
+    const currentUserGroups = await AppDataSource.manager.find(UserGroup, {
+        where: { user: { id: userId } },
+        relations: ['group']
+    });
+    const currentGroupIds = currentUserGroups.map(ug => ug.group.id);
 
-        // Check if the user has the required permission
-        const hasGroupsPermission = userPermissions.includes(code);
-        console.log({ hasGroupsPermission });
-        console.log({ code });
+    await Promise.all(
+        parsedGroupIds.map(async (g) => {
+            const groupEntity = await AppDataSource.manager.findOne(AuthGroup, { where: { id: g } });
+            if (groupEntity) {
+                if (!currentGroupIds.includes(g)) {
+                    await AppDataSource.manager.save(UserGroup, { user: { id: userId }, group: groupEntity });
+                    console.log(`Added group ID ${g} for user ${userId}`);
+                } else {
+                    console.log(`Group ID ${g} already exists for user ${userId}`);
+                }
+            } else {
+                console.warn(`Group with ID ${g} not found`);
+            }
+        })
+    );
 
-        return hasGroupsPermission;
-    } catch (error) {
-        logger.error('Error checking user permissions:', error);
-        return false;
-    }
-};
+    const groupsToRemove = currentGroupIds.filter(id => !parsedGroupIds.includes(id as number));
+    await Promise.all(
+        groupsToRemove.map(async (g) => {
+            await AppDataSource.manager.delete(UserGroup, { user: { id: userId }, group: { id: g } });
+            console.log(`Removed group ID ${g} from user ${userId}`);
+        })
+    );
+}
+

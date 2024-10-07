@@ -34,8 +34,8 @@ export default {
       name: "X-API-Key"
     }
   }, // optional
-  // authMiddlewares: ["auth", "auth:api"], // optional
-  // defaultSecurityScheme: "BearerAuth", // optional
+  authMiddlewares: ["auth", "auth:api"], // optional
+  defaultSecurityScheme: "BearerAuth", // optional
   persistAuthorization: true, // persist authorization between reloads on the swagger page
   showFullPath: true, // the path displayed after endpoint summary
 };
