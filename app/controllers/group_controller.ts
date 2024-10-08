@@ -13,7 +13,7 @@ export default class UserGroupsController {
 
   /**
    * @createGroup
-   * @operationId createGroup
+   * @operationId user
    * @description Creates a new user group with specified permissions.
    * @requestBody {"name": "string","isStatic": "boolean","permissionsIds": ["number"]}
    * @responseBody 201 - {"name": "string","isStatic": "boolean","permissionsIds": ["number"]}
@@ -37,7 +37,7 @@ export default class UserGroupsController {
 
   /**
    * @createPermissions
-   * @operationId createPermissions
+   * @operationId user
    * @description Creates a new Permissions with specified codes.
    * @responseBody 201 - {"status": 201,"savedAuthPermissions": [{"id": "number","name": "string","codename": "string"}]}
    * @paramUse(sortable, filterable)
@@ -45,7 +45,6 @@ export default class UserGroupsController {
   public async createPermissions() {
     try {
       const codenames = permissions.map(p => p.codename);
-      console.log('Codenames:', codenames);
 
       // Check for existing permissions
       const existingPermissions = await AppDataSource.manager.find(AuthPermission, {
@@ -64,7 +63,6 @@ export default class UserGroupsController {
         });
 
         const savedAuthPermissions = await AppDataSource.manager.save(AuthPermission, createdPermissions);
-        console.log('Saved Permissions:', savedAuthPermissions);
         return { status: 201, savedAuthPermissions };
       } else {
         return { status: 200, message: 'No new permissions to add.' };

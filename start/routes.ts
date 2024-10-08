@@ -12,10 +12,12 @@ router.post('/users/su', [UsersController, 'su'])
 router.post('/token/refresh', [UsersController, 'refreshToken']).prefix('/users').use(middleware.authenticate())
 
 router.group(() => {
-  //// TODO:
   router.post('/create', [UsersController, 'create'])
   router.get('/list', [UsersController, 'getAll'])
   router.get('/groups', [UsersController, 'getGroups'])
+  //// TODO:
+  router.get('/groups/:id', [UsersController, 'getGroupById'])
+  // router.put('/groups/:id', [UsersController, '_'])
   router.get('/:id', [UsersController, 'getById'])
   router.put('/:id', [UsersController, 'update'])
 }).prefix('/users').use(middleware.authenticate()).use(middleware.permissions())

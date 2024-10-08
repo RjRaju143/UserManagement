@@ -107,7 +107,7 @@ export default class UsersController {
    * @operationId login
    * @description login a new user.
    * @requestBody {"username":"string","password":"string"}
-   * @responseBody 201 - {"status": 200,"accessToken": "string","refreshToken": "string"}
+   * @responseBody 201 - {"status": 201,"accessToken": "string","refreshToken": "string"}
    * @paramUse(sortable, filterable)
   */
   public async login({ request, response }: HttpContext) {
@@ -167,12 +167,32 @@ export default class UsersController {
         parsedPage,
         parsedPageSize
       );
-      console.log(result)
       return response.status(200).json(result);
     } catch (error) {
       console.error('Internal Server Error', error);
       return response.status(500).json({ status: 500, message: 'Internal Server Error' });
     }
   }
+
+  // TODO:
+  // /**
+  //  * @getById
+  //  * @operationId getByIdUserGroup
+  //  * @description getById user group.
+  //  * @requestBody {"status": 200,"users": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": "boolean","isStaff": "boolean","isGuest": "boolean","isDefaultPassword": "boolean","firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "male","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "string","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
+  //  * @responseBody 200 - {"status": 200,"users": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": "boolean","isStaff": "boolean","isGuest": "boolean","isDefaultPassword": "boolean","firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "string","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "number","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
+  //  * @paramUse(sortable, filterable)
+  // */
+  public async getGroupById({ params, request, response }: HttpContext) {
+    const { id } = params;
+    const validatedData = await request.validate({
+      schema: UserByIdValidator,
+      data: { id: Number(id) },
+    });
+    const result = await this.userService.getGroupById(validatedData.id, request.user, request.userPermissions);
+    return response.status(201).json(result);
+  }
+
 }
+
 

@@ -15,7 +15,7 @@ export default class PermissionsMiddleware {
     try {
       const user = ctx.request.user
       if (user.isSuperuser) {
-        // console.log(`You are SuperUser 👻 ${user.username}`)
+        // console.log(`You are SuperUser  👻 ${user.username}`)
         logger.info(`You are SuperUser 👻 ${user.username}`)
         return await next()
       }

@@ -267,7 +267,7 @@ export class UserService {
       const tokens = await createToken({ id: userExist.id, userType: userExist.userType });
 
       if ('accessToken' in tokens && 'refreshToken' in tokens) {
-        return { status: 200, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
+        return { status: 201, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
       } else {
         console.error('Token creation error:', tokens);
         return { status: 500, message: 'Error creating tokens' };
@@ -401,5 +401,36 @@ export class UserService {
       return { status: 500, message: 'Internal Server Error' };
     }
   }
+
+  //TODO:
+  public async getGroupById(id: number, user: User, userPermissions: UserPermissions) {
+    if (user.isSuperuser) {
+      const groups = await AppDataSource.manager.find(AuthGroup, { where: { id } });
+      const permissions = await AppDataSource.manager.find(AuthGroupPermissions, { where: { group: { id } } });
+
+      if (groups.length > 0) {
+        const groupDetails = groups[0];
+
+        return {
+          id: groupDetails.id,
+          name: groupDetails.name,
+          permissions: permissions.map(permission => permission.permission?.id),
+          groupdetails: {
+            group: groupDetails.id,
+            reporting_to: groupDetails.reporting_to,
+          }
+        };
+      }
+
+      return { error: "Group not found" };
+    }
+
+    if (user.isAdmin || userPermissions.includes('view_groups')) {
+      // Handle admin and user permissions logic...
+      return { status: 403, message: "HELLO WORLD" };
+    }
+    return { status: 403, message: "Forbidden" };
+  }
+
 }
 
