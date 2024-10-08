@@ -1,7 +1,6 @@
 import { AppDataSource } from '#config/database'
 import { AuthGroupPermissions, UserGroup } from '#models/index'
 import type { HttpContext } from '@adonisjs/core/http'
-import logger from '@adonisjs/core/services/logger';
 import type { NextFn } from '@adonisjs/core/types/http'
 
 declare module '@adonisjs/core/http' {
@@ -33,7 +32,7 @@ export default class PermissionsMiddleware {
         return await next()
       }
     } catch (error) {
-      logger.error(error)
+      console.error(error)
       return ctx.response.status(500).json({ status: 500, message: "Internal server error" })
     }
     return ctx.response.status(403).json({ status: 403, message: "Forbidden" })

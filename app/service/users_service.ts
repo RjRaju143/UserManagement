@@ -1,12 +1,11 @@
 import hashing from '@adonisjs/core/services/hash';
-import logger from '@adonisjs/core/services/logger';
 import jwt from 'jsonwebtoken';
 import { AppDataSource } from "#config/database";
 import { jwtConfig } from "#config/jwt";
-import { AuthUser, UserGroup, AuthToken } from "#models/index"
+import { AuthUser, UserGroup, AuthToken, AuthGroup, AuthGroupPermissions } from "#models/index"
 import { CreateUserRequest, CreateUserResponse, GetAllUsersResponse, LoginResponse, UpdateUserRequest, LoginRequest, SuperUserRequest, SuperUserResponce, User, UserPermissions } from "#interface/user_interface"
 import { RefreshTokenResponse } from "#interface/tokens_interface"
-import { createToken, handleGroupUpdates } from "#helper/users.helpers"
+import { createToken, handleGroupUpdates, handleGroupUpdatesForUser } from "#helper/users.helpers"
 import { UserCreationService } from "#service/UserCreate"
 import { In, Like } from 'typeorm';
 
@@ -23,13 +22,14 @@ export class UserService {
         return await this.userCreationService.createUser({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds });
       }
 
-      if (user.isAdmin || userPermissions.includes('view_user')) {
+      //// TODO:
+      if (user.isAdmin || userPermissions.includes('add_user')) {
         return await this.userCreationService.createUser({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds });
       }
 
       return { status: 403, message: "Forbidden" };
     } catch (error: unknown) {
-      logger.error('Internal Server Error', error);
+      console.error('Internal Server Error', error);
       return { status: 500, message: 'Internal Server Error' };
     }
   }
@@ -121,7 +121,7 @@ export class UserService {
       }
       return { status: 403, message: "Forbidden" };
     } catch (error: unknown) {
-      logger.error('Internal Server Error', error);
+      console.error('Internal Server Error', error);
       return { status: 500, message: 'Internal Server Error' };
     }
   }
@@ -185,14 +185,14 @@ export class UserService {
 
   public async update(
     userId: number,
-    { username, email, isAdmin, firstname, lastname, phone, gender, userType, groupIds }: UpdateUserRequest,
+    { username, email, isAdmin, firstname, lastname, phone, gender, groupIds }: UpdateUserRequest,
     user: User,
     userPermissions: UserPermissions
   ) {
     try {
       if (user.isSuperuser) {
         const result = await AppDataSource.manager.update(AuthUser, userId, {
-          username, email, isAdmin, firstname, lastname, phone, gender, userType
+          username, email, isAdmin, firstname, lastname, phone, gender
         });
 
         if (result.affected === 0) {
@@ -204,39 +204,45 @@ export class UserService {
       }
 
       if (user.isAdmin || userPermissions.includes('change_user')) {
+        const parsedGroupIds = Array.isArray(groupIds)
+          ? groupIds.map(Number)
+          : [parseInt(groupIds)];
+
         const userGroups = await AppDataSource.manager.find(UserGroup, {
           where: { user: { id: user.id } },
           relations: ['group']
         });
         const groupIdsUser = userGroups.map(ug => ug.group.id);
+        const allGroupsAllowed = parsedGroupIds.every(gid => groupIdsUser.includes(gid));
+        if (!allGroupsAllowed) {
+          return { status: 403, message: "Forbidden: You cannot use this group." };
+        }
 
         const targetUserGroups = await AppDataSource.manager.find(UserGroup, {
           where: { user: { id: userId } },
           relations: ['group']
         });
         const targetGroupIds = targetUserGroups.map(ug => ug.group.id);
-
-        const hasSameGroup = targetGroupIds.some(id => groupIdsUser.includes(id));
-        if (!hasSameGroup) {
+        const commonGroupIds = targetGroupIds.filter(id => groupIdsUser.includes(id)) as number[];
+        if (commonGroupIds.length === 0) {
           return { status: 403, message: "Forbidden: You cannot update this user as they are not in the same group." };
         }
 
         const result = await AppDataSource.manager.update(AuthUser, userId, {
-          username, email, isAdmin, firstname, lastname, phone, gender, userType
+          username, email, isAdmin, firstname, lastname, phone, gender
         });
         if (result.affected === 0) {
           return { status: 404, message: 'User not found' };
         }
 
-        await handleGroupUpdates(userId, groupIds);
+        await handleGroupUpdatesForUser(userId, commonGroupIds);
+
         return { status: 200, message: 'User updated successfully' };
       }
-
-      return { status: 403, message: "Forbidden" };
-
-    } catch (error: unknown) {
-      console.error('Error updating user:', error);
-      return { status: 500, message: 'Error updating user' };
+    }
+    catch (error: unknown) {
+      console.error('Internal Server Error', error);
+      return { status: 500, message: 'Internal Server Error' };
     }
   }
 
@@ -263,11 +269,11 @@ export class UserService {
       if ('accessToken' in tokens && 'refreshToken' in tokens) {
         return { status: 200, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
       } else {
-        logger.error('Token creation error:', tokens);
+        console.error('Token creation error:', tokens);
         return { status: 500, message: 'Error creating tokens' };
       }
     } catch (error) {
-      logger.error('Error during login:', error);
+      console.error('Error during login:', error);
       return { status: 500, message: 'Internal Server Error' };
     }
   }
@@ -288,7 +294,7 @@ export class UserService {
       await AppDataSource.manager.save(newUser);
       return { status: 201, message: "User Created" };
     } catch (error: unknown) {
-      logger.error('Error during login:', error);
+      console.error('Error during login:', error);
       return { status: 500, message: 'Internal Server Error' };
     }
   }
@@ -320,7 +326,78 @@ export class UserService {
       return { status: 201, accessToken: newAccessToken };
 
     } catch (error: unknown) {
-      logger.error('Error refreshing token:', error);
+      console.error('Error refreshing token:', error);
+      return { status: 500, message: 'Internal Server Error' };
+    }
+  }
+
+  public async getGroups(
+    user: User,
+    userPermissions: UserPermissions,
+    search: string | undefined,
+    page: number,
+    page_size: number
+  ) {
+    try {
+      const skip = (page - 1) * page_size;
+      const searchCondition = search ? { name: Like(`%${search}%`) } : {};
+
+      if (user.isSuperuser) {
+        const [groups, _] = await AppDataSource.manager.findAndCount(AuthGroup, {
+          where: searchCondition,
+          skip,
+          take: page_size,
+          order: { name: 'ASC' }
+        });
+        const groupPermissionsPromises = groups.map(async (g) => {
+          return await AppDataSource.manager.find(AuthGroupPermissions, { where: { group: { id: g.id } } });
+        });
+        const groupPermissions = await Promise.all(groupPermissionsPromises);
+        const formattedResults = groups.map((group, index) => {
+          return {
+            id: group.id,
+            name: group.name,
+            permission_ids: groupPermissions[index].map(p => p.permission?.id),
+            reporting_to: group.reporting_to,
+            isStatic: group.isStatic,
+            is_delete: group.is_delete,
+          };
+        });
+
+        return { results: formattedResults };
+      }
+
+      if (user.isAdmin || userPermissions.includes('view_groups')) {
+        const userGroups = await AppDataSource.manager.find(UserGroup, {
+          where: { user: { id: user.id } }
+        });
+        const groupIds = userGroups.map(ug => ug.group.id);
+        const groups = await AppDataSource.manager.find(AuthGroup, {
+          where: { id: In(groupIds) }
+        });
+        const groupPermissionsPromises = groups.map(async (group) => {
+          const permissions = await AppDataSource.manager.find(AuthGroupPermissions, {
+            where: { group: { id: group.id } }
+          });
+
+          return {
+            ...group,
+            permission_ids: permissions.map(p => p.permission?.id),
+            user_count: await AppDataSource.manager.count(UserGroup, {
+              where: { group: { id: group.id } }
+            })
+          };
+        });
+
+        const groupsWithDetails = await Promise.all(groupPermissionsPromises);
+        const filteredResults = groupsWithDetails.filter(group => group.user_count > 0);
+        return { results: filteredResults };
+      }
+
+      return { status: 403, message: "Forbidden" };
+
+    } catch (error) {
+      console.error('Internal Server Error', error);
       return { status: 500, message: 'Internal Server Error' };
     }
   }

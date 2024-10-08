@@ -3,7 +3,6 @@ import { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import '@adonisjs/core/http';
-import logger from '@adonisjs/core/services/logger';
 import { AppDataSource } from '#config/database';
 import { AuthUser } from '#models/AuthUser';
 
@@ -36,7 +35,7 @@ export default class AuthMiddleware {
       ctx.request.user = userdata[0];
       return await next();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       return ctx.response.status(500).send({ message: "Internal Server Error", error });
     }
   }

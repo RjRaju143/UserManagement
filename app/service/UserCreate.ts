@@ -1,5 +1,4 @@
 import hashing from '@adonisjs/core/services/hash';
-import logger from '@adonisjs/core/services/logger';
 import { AppDataSource } from "#config/database";
 import { AuthGroup, AuthUser, UserGroup } from "#models/index"
 import { CreateUserRequest, CreateUserResponse } from "#interface/user_interface"
@@ -21,7 +20,7 @@ export class UserCreationService {
                     await AppDataSource.manager.save(userGroup);
                     return { id: authGroup.id, name: authGroup.name };
                 }
-                logger.error(`Group with id ${groupId} not found.`);
+                console.error(`Group with id ${groupId} not found.`);
                 return null;
             });
 
@@ -41,7 +40,7 @@ export class UserCreationService {
                 group_ids: validUserGroups.map(group => group.id),
             };
         } catch (error: unknown) {
-            logger.error('Error creating user:', error);
+            console.error('Error creating user:', error);
             return { status: 500, message: 'Error creating user' };
         }
     }

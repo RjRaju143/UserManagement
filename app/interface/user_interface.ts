@@ -38,14 +38,10 @@ export interface UpdateUserRequest {
   username: string;
   email: string;
   isAdmin?: boolean;
-  isStaff?: boolean;
-  isGuest?: boolean;
   firstname: string;
   lastname: string;
   phone: number;
   gender: string;
-  isActive?: boolean;
-  userType: string;
   groupIds: any;
 }
 

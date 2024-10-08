@@ -92,10 +92,13 @@ export default class UsersController {
         },
       });
     } catch (error) {
-      return response.status(422).json({ errors: error.messages });
+      return response.status(422).json({ message: error.messages });
     }
-    const { username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType, groupIds } = request.body();
-    const result = await this.userService.update(id, { username, email, isAdmin, isStaff, isGuest, firstname, lastname, phone, gender, isActive, userType, groupIds }, request.user, request.userPermissions);
+    const { username, email, isAdmin, firstname, lastname, phone, gender, groupIds } = request.body();
+    const result = await this.userService.update(id, { username, email, isAdmin, firstname, lastname, phone, gender, groupIds }, request.user, request.userPermissions);
+    if (!result) {
+      return response.status(500).json({ message: "Internal Server Error" });
+    }
     return response.status(result.status).json(result);
   }
 
@@ -140,4 +143,36 @@ export default class UsersController {
     const result = await this.userService.refreshToken(refresh);
     return response.status(result.status).json(result);
   }
+
+  /**
+   * @getGroups
+   * @operationId getGroups
+   * @description getGroups user group.
+   * @queryParam {string} [search] - Optional search term to filter users by username, email, firstname, or lastname.
+   * @queryParam {number} [page] - Optional search term to filter page.
+   * @queryParam {number} [page_size] - Optional search term to filter page_size.
+   * @responseBody 200 - {"results": [{"id": "number","name": "string","permission_ids": ["number"],"reporting_to": "string","isStatic": "boolean","is_delete": "boolean"}]}
+   * @paramUse(sortable, filterable)
+  */
+  public async getGroups({ request, response }: HttpContext) {
+    const { search, page = '1', page_size = '10' } = request.qs();
+    const searchTerm = Array.isArray(search) ? search[0] : search;
+    const parsedPage = parseInt(page as string, 10) || 1;
+    const parsedPageSize = parseInt(page_size as string, 10) || 10;
+    try {
+      const result = await this.userService.getGroups(
+        request.user,
+        request.userPermissions,
+        searchTerm,
+        parsedPage,
+        parsedPageSize
+      );
+      console.log(result)
+      return response.status(200).json(result);
+    } catch (error) {
+      console.error('Internal Server Error', error);
+      return response.status(500).json({ status: 500, message: 'Internal Server Error' });
+    }
+  }
 }
+

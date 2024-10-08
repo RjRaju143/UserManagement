@@ -29,8 +29,6 @@ export const UserUpdateValidator = schema.create({
     rules.email(),
   ]),
   isAdmin: schema.boolean(),
-  isStaff: schema.boolean(),
-  isGuest: schema.boolean(),
   firstname: schema.string({ trim: true }, [
     rules.minLength(1),
     rules.maxLength(50),
@@ -43,7 +41,5 @@ export const UserUpdateValidator = schema.create({
     rules.mobile({ strict: true }),
   ]),
   gender: schema.string.optional(),
-  isActive: schema.boolean(),
-  userType: schema.string.optional(),
 });
 

@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import logger from '@adonisjs/core/services/logger';
 import { AuthGroup, AuthToken, UserGroup } from '#models/index';
 import { jwtConfig } from '#config/jwt';
 import { AppDataSource } from '#config/database';
@@ -25,22 +24,22 @@ export const createToken = async (data: TokenData): Promise<TokenResponce | Erro
         await AppDataSource.manager.save(authToken);
         return { accessToken, refreshToken };
     } catch (error) {
-        logger.error(error)
+        console.error(error)
         return error as Error;
     }
 };
 
-export const handleGroupUpdates = async (userId: number, groupIds: string[]) => {
-    const parsedGroupIds = groupIds.flatMap(id => id.split(',').map(Number).filter(n => !isNaN(n)));
-
-    console.log('Parsed group IDs:', parsedGroupIds);
-
+export const handleGroupUpdates = async (userId: number, groupIds: string | string[]) => {
+    const idsArray = Array.isArray(groupIds) ? groupIds : [groupIds];
+    const parsedGroupIds = idsArray.flatMap(id => {
+        const parsedNum = typeof id === 'string' ? Number(id.trim()) : id; // Convert to number
+        return isNaN(parsedNum) ? null : parsedNum; // Return null for invalid numbers
+    }).filter(n => n !== null) as number[]; // Filter out null values
     const currentUserGroups = await AppDataSource.manager.find(UserGroup, {
         where: { user: { id: userId } },
         relations: ['group']
     });
     const currentGroupIds = currentUserGroups.map(ug => ug.group.id);
-
     await Promise.all(
         parsedGroupIds.map(async (g) => {
             const groupEntity = await AppDataSource.manager.findOne(AuthGroup, { where: { id: g } });
@@ -58,6 +57,33 @@ export const handleGroupUpdates = async (userId: number, groupIds: string[]) => 
     );
 
     const groupsToRemove = currentGroupIds.filter(id => !parsedGroupIds.includes(id as number));
+    await Promise.all(
+        groupsToRemove.map(async (g) => {
+            await AppDataSource.manager.delete(UserGroup, { user: { id: userId }, group: { id: g } });
+            console.log(`Removed group ID ${g} from user ${userId}`);
+        })
+    );
+}
+
+export const handleGroupUpdatesForUser = async (userId: number, groupIds: number[]) => {
+    const currentUserGroups = await AppDataSource.manager.find(UserGroup, {
+        where: { user: { id: userId } },
+        relations: ['group']
+    });
+    const currentGroupIds = currentUserGroups.map(ug => ug.group.id);
+    const groupsToAdd = groupIds.filter(id => !currentGroupIds.includes(id));
+    await Promise.all(
+        groupsToAdd.map(async (g) => {
+            const groupEntity = await AppDataSource.manager.findOne(AuthGroup, { where: { id: g } });
+            if (groupEntity) {
+                await AppDataSource.manager.save(UserGroup, { user: { id: userId }, group: groupEntity });
+                console.log(`Added group ID ${g} for user ${userId}`);
+            } else {
+                console.warn(`Group with ID ${g} not found`);
+            }
+        })
+    );
+    const groupsToRemove = currentGroupIds.filter(id => !groupIds.includes(id as number));
     await Promise.all(
         groupsToRemove.map(async (g) => {
             await AppDataSource.manager.delete(UserGroup, { user: { id: userId }, group: { id: g } });
