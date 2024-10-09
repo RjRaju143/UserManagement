@@ -35,7 +35,6 @@ export class UserService {
     }
   }
 
-  //// TODO:
   public async getAllUsers(user: User, userPermissions: UserPermissions, search: string | undefined, page: number, page_size: number): Promise<GetAllUsersResponse> {
     try {
       const skip = (page - 1) * page_size;
@@ -85,7 +84,7 @@ export class UserService {
         const [usersInGroups, total] = await AppDataSource.manager.findAndCount(UserGroup, {
           where: {
             group: { id: In(groupIds) },
-            user: searchCondition
+            user: { isDelete: false, ...searchCondition }
           },
           relations: ['user', 'group'],
           skip,

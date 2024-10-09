@@ -21,6 +21,10 @@ npx typeorm migration:run ----dataSource ./build/config/data-source.js
   "synchronize": false // Make sure this is set to false to prevent automatic migrations
 }
 
+isDelete : false // TODO:
+list : done
+
+
 ### static server
 
 node ace add @adonisjs/static -->
