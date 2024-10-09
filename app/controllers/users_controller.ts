@@ -1,7 +1,7 @@
 import { inject } from '@adonisjs/core';
 import type { HttpContext } from '@adonisjs/core/http';
 import { UserService } from '../service/users_service.js';
-import { UserByIdValidator, UserUpdateValidator } from '#validator/CreateGroupValidator';
+import { CreateGroupValidator, UserByIdValidator, UserUpdateValidator } from '#validator/CreateGroupValidator';
 
 @inject()
 export default class UsersController {
@@ -22,17 +22,14 @@ export default class UsersController {
   }
 
   /**
-   * @getAll
-   * @operationId getAll
-   * @description getAll user group.
-   * @queryParam {string} [search] - Optional search term to filter users by username, email, firstname, or lastname.
-   * @queryParam {number} [page] - Optional search term to filter page.
-   * @queryParam {number} [page_size] - Optional search term to filter page_size.
-   * @requestBody {"status": 200,"users": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": "boolean","isStaff": "boolean","isGuest": "boolean","isDefaultPassword": "boolean","firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "male","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "string","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
-   * @responseBody 200 - {"status": 200,"users": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": "boolean","isStaff": "boolean","isGuest": "boolean","isDefaultPassword": "boolean","firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "string","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "number","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
-  * @paramUse(sortable, filterable)
+   * @getAllUsers
+   * @operationId getAllUsers
+   * @description get all user group.
+   * @requestBody {"status": 200,"users": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": "boolean","isStaff": "boolean","isGuest": "boolean","isDefaultPassword": "boolean","firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "string","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "number","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
+   * @responseBody 200 - {"status": 200,"results": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": "boolean","isStaff": "boolean","isGuest": "boolean","isDefaultPassword": "boolean","firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "string","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "number","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
+   * @paramUse(sortable, filterable)
    */
-  public async getAll({ request, response }: HttpContext) {
+  public async getAllUsers({ request, response }: HttpContext) {
     const { search, page = '1', page_size = '10' } = request.qs();
 
     const searchTerm = Array.isArray(search) ? search[0] : search;
@@ -41,7 +38,7 @@ export default class UsersController {
     const parsedPageSize = parseInt(page_size as string, 10) || 10;
 
     try {
-      const result = await this.userService.getAll(
+      const result = await this.userService.getAllUsers(
         request.user,
         request.userPermissions,
         searchTerm,
@@ -56,32 +53,32 @@ export default class UsersController {
   }
 
   /**
-   * @getById
+   * @getUserById
    * @operationId getByIdUserGroup
    * @description getById user group.
    * @requestBody {"status": 200,"users": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": "boolean","isStaff": "boolean","isGuest": "boolean","isDefaultPassword": "boolean","firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "male","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "string","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
    * @responseBody 200 - {"status": 200,"users": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": "boolean","isStaff": "boolean","isGuest": "boolean","isDefaultPassword": "boolean","firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "string","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "number","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
    * @paramUse(sortable, filterable)
    */
-  public async getById({ params, request, response }: HttpContext) {
+  public async getUserById({ params, request, response }: HttpContext) {
     const { id } = params;
     const validatedData = await request.validate({
       schema: UserByIdValidator,
       data: { id: Number(id) },
     });
-    const result = await this.userService.getById(validatedData.id, request.user, request.userPermissions);
+    const result = await this.userService.getUserById(validatedData.id, request.user, request.userPermissions);
     return response.status(result.status).json(result);
   }
 
   /**
-   * @update
-   * @operationId updateUserGroup
-   * @description Creates a new user group with specified permissions.
+   * @updateUser
+   * @operationId updateUser
+   * @description update user group with specified permissions.
    * @requestBody {"username":"string", "email":"string", "isAdmin":"boolean", "firstname":"string", "lastname":"string", "phone":"number", "gender":"string", "groupIds":["numbers"]}
    * @responseBody 201 - {"username":"string", "password":"string", "email":"string@example.com", "isAdmin":"boolean", "firstname":"string", "lastname":"string", "phone":"number", "gender":"male", "groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}
    * @paramUse(sortable, filterable)
   */
-  public async update({ params, request, response }: HttpContext) {
+  public async updateUser({ params, request, response }: HttpContext) {
     const { id } = params;
     try {
       await request.validate({
@@ -95,10 +92,7 @@ export default class UsersController {
       return response.status(422).json({ message: error.messages });
     }
     const { username, email, isAdmin, firstname, lastname, phone, gender, groupIds } = request.body();
-    const result = await this.userService.update(id, { username, email, isAdmin, firstname, lastname, phone, gender, groupIds }, request.user, request.userPermissions);
-    if (!result) {
-      return response.status(500).json({ message: "Internal Server Error" });
-    }
+    const result = await this.userService.updateUser(id, { username, email, isAdmin, firstname, lastname, phone, gender, groupIds }, request.user, request.userPermissions);
     return response.status(result.status).json(result);
   }
 
@@ -167,22 +161,20 @@ export default class UsersController {
         parsedPage,
         parsedPageSize
       );
-      return response.status(200).json(result);
+      return response.status(result.status).json(result);
     } catch (error) {
       console.error('Internal Server Error', error);
       return response.status(500).json({ status: 500, message: 'Internal Server Error' });
     }
   }
 
-  // TODO:
-  // /**
-  //  * @getById
-  //  * @operationId getByIdUserGroup
-  //  * @description getById user group.
-  //  * @requestBody {"status": 200,"users": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": "boolean","isStaff": "boolean","isGuest": "boolean","isDefaultPassword": "boolean","firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "male","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "string","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
-  //  * @responseBody 200 - {"status": 200,"users": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": "boolean","isStaff": "boolean","isGuest": "boolean","isDefaultPassword": "boolean","firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "string","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "number","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
-  //  * @paramUse(sortable, filterable)
-  // */
+  /**
+   * @getGroupById
+   * @operationId getGroupById
+   * @description getGroupById user group.
+   * @responseBody 200 - {"status": "number","id": "number","name": "string","permissions": ["number"],"reporting_to_id": "number","groupdetails": {"group": "number","reporting_to": "number"}}
+   * @paramUse(sortable, filterable)
+   */
   public async getGroupById({ params, request, response }: HttpContext) {
     const { id } = params;
     const validatedData = await request.validate({
@@ -190,9 +182,59 @@ export default class UsersController {
       data: { id: Number(id) },
     });
     const result = await this.userService.getGroupById(validatedData.id, request.user, request.userPermissions);
-    return response.status(201).json(result);
+    return response.status(result.status).json(result);
   }
 
-}
+  /**
+   * @updateGroupById
+   * @operationId updateGroupById
+   * @description update group with specified permissions.
+   * @requestBody {"name": "string","permission_ids": ["number","number"]}
+   * @responseBody 200 - {"status": "number","id": "number","name": "string","permissions": ["number"],"reporting_to_id": "number","groupdetails": {"group": "number","reporting_to": "number"}}
+   * @paramUse(sortable, filterable)
+  */
+  public async updateGroupById({ params, request, response }: HttpContext) {
+    const { id } = params;
+    const { name, permission_ids } = request.body();
+    const result = await this.userService.updateGroupById(id, name, permission_ids, request.user, request.userPermissions);
+    return response.status(result.status).json(result);
+  }
 
+  /**
+   * @logout
+   * @operationId logout
+   * @description logout user.
+   * @responseBody 200 - { "status": "200", "message": "string" }
+   * @paramUse(sortable, filterable)
+  */
+  public async logout({ request, response }: HttpContext) {
+    // const { refresh } = request.body();
+    const result = await this.userService.logout(request.user);
+    return response.status(result.status).json(result);
+  }
+
+  /**
+   * @createGroup
+   * @operationId user
+   * @description Creates a new user group with specified permissions.
+   * @requestBody {"name": "string","isStatic": "boolean","permissionsIds": ["number"]}
+   * @responseBody 201 - {"name": "string","isStatic": "boolean","permissionsIds": ["number"]}
+   * @paramUse(sortable, filterable)
+  */
+  public async createGroup({ request, response }: HttpContext) {
+
+    const validatedData = await request.validate({
+      schema: CreateGroupValidator,
+    });
+    const { name, isStatic, permissionsIds } = validatedData;
+
+    try {
+      const result = await this.userService.createGroup({ name, isStatic, permissionsIds });
+      return response.status(result.status).json(result);
+    } catch (error) {
+      console.error('Error creating user group:', error);
+      return response.status(500).json({ message: 'Error creating user group', error });
+    }
+  }
+}
 

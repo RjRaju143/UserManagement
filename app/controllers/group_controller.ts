@@ -1,39 +1,11 @@
 import { inject } from '@adonisjs/core';
-import { HttpContext } from '@adonisjs/core/http';
 import { In } from 'typeorm';
-
 import { AuthPermission, permissions } from "#models/index"
-import { UserGroupService } from '#service/group_service';
 import { AppDataSource } from "#config/database";
-import { CreateGroupValidator } from "#validator/CreateGroupValidator"
 
 @inject()
 export default class UserGroupsController {
-  constructor(private userGroupService: UserGroupService) { }
-
-  /**
-   * @createGroup
-   * @operationId user
-   * @description Creates a new user group with specified permissions.
-   * @requestBody {"name": "string","isStatic": "boolean","permissionsIds": ["number"]}
-   * @responseBody 201 - {"name": "string","isStatic": "boolean","permissionsIds": ["number"]}
-   * @paramUse(sortable, filterable)
-  */
-  public async createGroup({ request, response }: HttpContext) {
-
-    const validatedData = await request.validate({
-      schema: CreateGroupValidator,
-    });
-    const { name, isStatic, permissionsIds } = validatedData;
-
-    try {
-      const result = await this.userGroupService.create({ name, isStatic, permissionsIds });
-      return response.status(result.status).json(result);
-    } catch (error) {
-      console.error('Error creating user group:', error);
-      return response.status(500).json({ message: 'Error creating user group', error });
-    }
-  }
+  constructor() { }
 
   /**
    * @createPermissions
@@ -42,11 +14,9 @@ export default class UserGroupsController {
    * @responseBody 201 - {"status": 201,"savedAuthPermissions": [{"id": "number","name": "string","codename": "string"}]}
    * @paramUse(sortable, filterable)
   */
-  public async createPermissions() {
+  public async userpermissions() {
     try {
       const codenames = permissions.map(p => p.codename);
-
-      // Check for existing permissions
       const existingPermissions = await AppDataSource.manager.find(AuthPermission, {
         where: { codename: In(codenames) }
       });
