@@ -76,3 +76,28 @@ export interface User {
 
 export type UserPermissions = string[];
 
+export interface getGroupByIdResponse {
+  status: number;
+  message?: string;
+  id?: number;
+  name?: string;
+  permissions?: any;
+  reporting_to_id?: any;
+  groupdetails?: any;
+}
+
+export interface getGroupsResponse {
+  status: number;
+  message?: string;
+  results?: unknown;
+  id?: number;
+}
+
+// export interface UpdateResponse {
+//   status: number;
+//   message: string;
+// }
+
+export type UpdateResponse = any;
+
+

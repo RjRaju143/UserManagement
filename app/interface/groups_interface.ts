@@ -13,3 +13,16 @@ export interface CreateGroupResponse {
     static?: boolean;
 }
 
+export interface UpdateGroupResponse {
+    status: number;
+    id?: number;
+    message?: string
+    name?: string;
+    permissions?: (number | undefined)[];
+    reporting_to_id?: (number | string);
+    groupdetails?: {
+        group?: unknown;
+        reporting_to?: unknown;
+    };
+}
+
