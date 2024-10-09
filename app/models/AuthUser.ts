@@ -79,4 +79,8 @@ export class AuthUser extends BaseEntity {
 
     @Column({ type: 'varchar', nullable: true })
     erpId: string | null = null;
+
+    @Column({ type: 'boolean', default: false })
+    isDelete: boolean = false;
 }
+

@@ -6,7 +6,7 @@ export class AuthGroup extends BaseEntity {
         super();
         this.name = '';
         this.isStatic = false;
-        this.is_delete = false;
+        this.isDelete = false;
     }
     @PrimaryGeneratedColumn()
     id?: number;
@@ -21,5 +21,5 @@ export class AuthGroup extends BaseEntity {
     isStatic: boolean;
 
     @Column({ type: 'boolean', default: false })
-    is_delete: boolean;
+    isDelete: boolean;
 }
