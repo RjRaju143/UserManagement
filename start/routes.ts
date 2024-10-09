@@ -5,25 +5,20 @@ import { middleware } from "#start/kernel"
 const UsersController = () => import('#controllers/users_controller')
 const GroupController = () => import('#controllers/group_controller')
 
-router.post('/users/login', [UsersController, 'login'])
-
-router.post('/users/su', [UsersController, 'su'])
-
-router.post('/token/refresh', [UsersController, 'refreshToken']).prefix('/users').use(middleware.authenticate())
-
 router.group(() => {
-  router.post('/create', [UsersController, 'create'])
-  router.get('/list', [UsersController, 'getAll'])
-  router.get('/groups', [UsersController, 'getGroups'])
-  //// TODO:
-  router.get('/groups/:id', [UsersController, 'getGroupById'])
-  // router.put('/groups/:id', [UsersController, '_'])
-  router.get('/:id', [UsersController, 'getById'])
-  router.put('/:id', [UsersController, 'update'])
-}).prefix('/users').use(middleware.authenticate()).use(middleware.permissions())
-
-router.group(() => {
-  router.post('/create', [GroupController, 'createGroup'])
-  router.get('/permissions', [GroupController, 'createPermissions'])
-}).prefix('/group').use(middleware.authenticate())
+  router.post('/su', [UsersController, 'su'])
+  router.post('/login', [UsersController, 'login'])
+  router.post('/token/refresh', [UsersController, 'refreshToken']).use(middleware.authenticate())
+  router.delete('/logout', [UsersController, 'logout']).use(middleware.authenticate())
+  router.post('/create', [UsersController, 'create']).use(middleware.authenticate()).use(middleware.permissions())
+  ////
+  router.get('/list', [UsersController, 'getAllUsers']).use(middleware.authenticate()).use(middleware.permissions())
+  router.get('/groups', [UsersController, 'getGroups']).use(middleware.authenticate()).use(middleware.permissions())
+  router.get('/groups/:id', [UsersController, 'getGroupById']).use(middleware.authenticate()).use(middleware.permissions())
+  router.post('/groups', [UsersController, 'createGroup']).use(middleware.authenticate()).use(middleware.permissions())
+  router.put('/groups/:id', [UsersController, 'updateGroupById']).use(middleware.authenticate()).use(middleware.permissions())
+  router.get('/userpermissions/', [GroupController, 'userpermissions']).use(middleware.authenticate())
+  router.get('/:id', [UsersController, 'getUserById']).use(middleware.authenticate()).use(middleware.permissions())
+  router.put('/:id', [UsersController, 'updateUser']).use(middleware.authenticate()).use(middleware.permissions())
+}).prefix('/api/users')
 
