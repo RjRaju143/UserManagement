@@ -1,10 +1,10 @@
 import { AdminJSProviderConfig } from '@adminjs/adonis'
 import AdminJS from "adminjs";
 import * as AdminJSTypeorm from "@adminjs/typeorm";
-import componentLoader from '../app/admin/component_loader.js'
-import authProvider from '../app/admin/auth.js'
-import { AuthUser, AuthGroup, AuthGroupPermissions, AuthPermission, AuthToken, UserGroup } from "../app/models/index.js"
-import { AppDataSource } from "./database.js";
+import componentLoader from '#admin/component_loader'
+import authProvider from '#admin/auth'
+import { AuthUser, AuthGroup, AuthGroupPermissions, AuthPermission, AuthToken, UserGroup } from "#models/index"
+import { AppDataSource } from "#config/database";
 
 AppDataSource.initialize().then(async () => {
   console.log("db connected !...")

@@ -15,6 +15,7 @@
     "typecheck": "tsc --noEmit"
   },
   "imports": {
+    "#admin/*": "./app/admin/*.js",
     "#controllers/*": "./app/controllers/*.js",
     "#service/*": "./app/service/*.js",
     "#exceptions/*": "./app/exceptions/*.js",
