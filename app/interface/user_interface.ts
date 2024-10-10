@@ -24,6 +24,11 @@ export interface CreateUserResponse {
   message?: string;
 }
 
+export enum Gender {
+  MALE = 'male',
+  FEMALE = 'female',
+}
+
 export interface GetAllUsersResponse {
   status: number;
   results?: Array<{}>;
@@ -93,11 +98,4 @@ export interface getGroupsResponse {
   id?: number;
 }
 
-// export interface UpdateResponse {
-//   status: number;
-//   message: string;
-// }
-
 export type UpdateResponse = any;
-
-

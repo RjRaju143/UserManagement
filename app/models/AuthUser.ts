@@ -1,18 +1,19 @@
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from 'typeorm';
+import { Gender } from "#interface/user_interface"
 
 @Entity('auth_user')
 export class AuthUser extends BaseEntity {
     @PrimaryGeneratedColumn()
-    id?: number;
+    id!: number;
 
     @Column({ type: 'varchar', unique: true })
-    username: string = '';
+    username!: string;
 
     @Column({ type: 'varchar' })
-    password: string = '';
+    password!: string;
 
     @Column({ type: 'varchar', unique: true })
-    email: string = '';
+    email!: string;
 
     @Column({ type: 'boolean', default: false })
     isAdmin: boolean = false;
@@ -30,25 +31,25 @@ export class AuthUser extends BaseEntity {
     isDefaultPassword: boolean = false;
 
     @Column({ type: 'varchar' })
-    firstname: string = '';
+    firstname!: string;
 
     @Column({ type: 'varchar' })
-    lastname: string = '';
+    lastname!: string;
 
     @Column({ type: 'bigint', unique: true })
-    phone: number = 0;
+    phone!: number;
 
     @Column({ type: 'integer', nullable: true, default: null })
     otp: number | null = null;
 
     @Column({ type: 'varchar', default: '0.000000' })
-    latitude: string = '0.000000';
+    latitude!: string;
 
     @Column({ type: 'varchar', default: '0.000000' })
-    longitude: string = '0.000000';
+    longitude!: string;
 
-    @Column({ type: 'varchar', nullable: true })
-    gender: string | null = null;
+    @Column({ type: 'enum', enum: Gender, nullable: true })
+    gender: Gender | null = null;
 
     @Column({ type: 'boolean', default: false })
     isEmailVerified: boolean = false;
@@ -60,7 +61,7 @@ export class AuthUser extends BaseEntity {
     isPhoneVerified: boolean = false;
 
     @Column({ type: 'varchar', default: 'User' })
-    userType: string = 'User';
+    userType!: string;
 
     @Column({ type: 'timestamp', nullable: true })
     lastLogin: Date | null = null;
@@ -72,7 +73,7 @@ export class AuthUser extends BaseEntity {
     address: string | null = null;
 
     @Column({ type: 'integer' })
-    pincode: number = 0;
+    pincode!: number;
 
     @Column({ type: 'varchar', nullable: true })
     erpCode: string | null = null;
