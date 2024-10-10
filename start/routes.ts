@@ -14,10 +14,10 @@ router.group(() => {
   router.get('/list', [UsersController, 'getAllUsers']).use(middleware.authenticate()).use(middleware.permissions())
   ////
   router.get('/groups', [UsersController, 'getGroups']).use(middleware.authenticate()).use(middleware.permissions())
-  router.get('/groups/:id', [UsersController, 'getGroupById']).use(middleware.authenticate()).use(middleware.permissions())
-  router.post('/groups', [UsersController, 'createGroup']).use(middleware.authenticate()).use(middleware.permissions())
-  router.put('/groups/:id', [UsersController, 'updateGroupById']).use(middleware.authenticate()).use(middleware.permissions())
   router.get('/apps/permissions', [PermissionsController, 'userpermissions']).use(middleware.authenticate())
+  router.post('/groups', [UsersController, 'createGroup']).use(middleware.authenticate()).use(middleware.permissions())
+  router.get('/groups/:id', [UsersController, 'getGroupById']).use(middleware.authenticate()).use(middleware.permissions())
+  router.put('/groups/:id', [UsersController, 'updateGroupById']).use(middleware.authenticate()).use(middleware.permissions())
   router.get('/:id', [UsersController, 'getUserById']).use(middleware.authenticate()).use(middleware.permissions())
   router.put('/:id', [UsersController, 'updateUser']).use(middleware.authenticate()).use(middleware.permissions())
 }).prefix('/api/users')
