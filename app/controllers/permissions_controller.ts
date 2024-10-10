@@ -8,7 +8,7 @@ export default class UserGroupsController {
   constructor() { }
 
   /**
-   * @createPermissions
+   * @userpermissions
    * @operationId user
    * @description Creates a new Permissions with specified codes.
    * @responseBody 201 - {"status": 201,"savedAuthPermissions": [{"id": "number","name": "string","codename": "string"}]}

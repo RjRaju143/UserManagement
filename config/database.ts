@@ -35,13 +35,6 @@ export const AppDataSource = new DataSource({
   synchronize: env.get('DEBUG'),
 })
 
-AppDataSource.initialize().then(async () => {
-  console.log("db connected !...")
-}).catch(error => {
-  console.log(error);
-  process.exit(1);
-})
-
 const dbConfig = defineConfig(db)
 export default dbConfig
 

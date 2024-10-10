@@ -10,7 +10,7 @@ export class AuthGroupPermissions extends BaseEntity {
     @JoinColumn({ name: 'permission_id' })
     permission?: AuthPermission;
 
-    @ManyToOne(() => AuthGroup)
+    @ManyToOne(() => AuthGroup, { eager: true })
     @JoinColumn({ name: 'group_id' })
     group?: AuthGroup;
 

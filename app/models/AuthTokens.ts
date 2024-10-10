@@ -1,24 +1,24 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, BaseEntity } from 'typeorm';
 import { AuthUser } from "#models/index"
 
 @Entity('auth_token')
-export class AuthToken {
+export class AuthToken extends BaseEntity {
     @PrimaryGeneratedColumn()
-    id?: number;
+    id!: number;
 
     @ManyToOne(() => AuthUser, { eager: true })
     @JoinColumn({ name: 'user_id' })
-    user?: AuthUser;
+    user!: AuthUser;
 
     @Column({ type: 'varchar', length: 512 })
-    accessToken?: string;
+    accessToken!: string;
 
     @Column({ type: 'varchar', length: 512 })
-    refreshToken?: string;
+    refreshToken!: string;
 
     @CreateDateColumn()
-    createdAt?: Date;
+    createdAt!: Date;
 
     @UpdateDateColumn()
-    updatedAt?: Date;
+    updatedAt!: Date;
 }

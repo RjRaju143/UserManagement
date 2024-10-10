@@ -1,6 +1,22 @@
 import { AdminJSProviderConfig } from '@adminjs/adonis'
+import AdminJS from "adminjs";
+import * as AdminJSTypeorm from "@adminjs/typeorm";
 import componentLoader from '../app/admin/component_loader.js'
 import authProvider from '../app/admin/auth.js'
+import { AuthUser, AuthGroup, AuthGroupPermissions, AuthPermission, AuthToken, UserGroup } from "../app/models/index.js"
+import { AppDataSource } from "./database.js";
+
+AppDataSource.initialize().then(async () => {
+  console.log("db connected !...")
+}).catch(error => {
+  console.log(error);
+  process.exit(1);
+})
+
+AdminJS.registerAdapter({
+  Resource: AdminJSTypeorm.Resource,
+  Database: AdminJSTypeorm.Database,
+});
 
 const adminjsConfig: AdminJSProviderConfig = {
   adapter: {
@@ -11,7 +27,7 @@ const adminjsConfig: AdminJSProviderConfig = {
     loginPath: '/admin/login',
     logoutPath: '/admin/logout',
     componentLoader,
-    resources: [],
+    resources: [AuthUser, AuthGroup, UserGroup, AuthPermission, AuthGroupPermissions, AuthToken],
     pages: {},
     locale: {
       availableLanguages: ['en'],
@@ -50,5 +66,4 @@ const adminjsConfig: AdminJSProviderConfig = {
   },
   middlewares: [],
 }
-
 export default adminjsConfig
