@@ -15,7 +15,8 @@ export class UserService {
     this.userCreationService = new UserCreationService();
   }
 
-  public async create({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds }: CreateUserRequest, user: User, userPermissions: UserPermissions): Promise<CreateUserResponse> {
+  public async create(payload: CreateUserRequest, user: User, userPermissions: UserPermissions): Promise<CreateUserResponse> {
+    const { username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds } = payload;
     try {
       if (user.isSuperuser) {
         return await this.userCreationService.createUser({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds });
@@ -250,13 +251,11 @@ export class UserService {
     }
   }
 
-  public async login({ username, password, email }: LoginRequest): Promise<LoginResponse> {
+  public async login(payload: LoginRequest): Promise<LoginResponse> {
+    const { username, password, email } = payload
     try {
       const userExist = await AppDataSource.manager.findOne(AuthUser, {
-        where: [
-          { username },
-          { email },
-        ]
+        where: [{ username }, { email }]
       });
 
       if (!userExist || userExist.isDelete) {
@@ -264,7 +263,6 @@ export class UserService {
       }
 
       const isPasswordValid = await hashing.verify(userExist.password, password);
-      console.log({ isPasswordValid })
       if (!isPasswordValid) {
         return { status: 400, message: "User or Password Incorrect" };
       }
@@ -317,13 +315,11 @@ export class UserService {
       }
 
       const decoded = jwt.verify(token.refreshToken, jwtConfig.jwt.secret) as { id: number; userType: string };
-
       const newAccessToken = jwt.sign({ id: decoded.id, userType: decoded.userType }, jwtConfig.jwt.secret, {
         expiresIn: jwtConfig.jwt.accessTokenExpiresIn,
       });
 
       const updateResult = await AppDataSource.manager.update(AuthToken, { user: { id: token.user?.id } }, { accessToken: newAccessToken });
-
       if (updateResult.affected === 0) {
         throw new Error('Token not found');
       }
@@ -463,7 +459,7 @@ export class UserService {
     }
   }
 
-  public async updateGroupById(id: number, name: string, permission_ids: string[], user: User, userPermissions: UserPermissions): Promise<UpdateGroupResponse> {
+  public async updateGroupById(id: number, name: string, permission_ids: number[], user: User, userPermissions: UserPermissions): Promise<UpdateGroupResponse> {
 
     try {
       if (user.isSuperuser) {

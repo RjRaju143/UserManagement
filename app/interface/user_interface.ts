@@ -2,7 +2,7 @@ export interface CreateUserRequest {
   username: string;
   password: string;
   email: string;
-  isAdmin: boolean;
+  isAdmin?: boolean;
   firstname: string;
   lastname: string;
   phone: number;
@@ -59,9 +59,9 @@ export interface LoginResponse {
 }
 
 export interface LoginRequest {
-  username: string;
+  username?: string;
+  email?: string;
   password: string;
-  email: string;
 }
 
 export interface SuperUserRequest {

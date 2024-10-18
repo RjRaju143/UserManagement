@@ -1,7 +1,7 @@
 import { inject } from '@adonisjs/core';
 import type { HttpContext } from '@adonisjs/core/http';
 import { UserService } from '#service/users_service';
-import { CreateGroupValidator, UserByIdValidator, UserUpdateValidator } from '#validator/CreateGroupValidator';
+import { CreateGroupValidator, CreateUserValidator, RefreshTokenValidator, UserByIdValidator, UserGroupByIdValidator, UserLoginValidator, UserUpdateValidator } from '#validator/CreateGroupValidator';
 
 @inject()
 export default class UsersController {
@@ -16,7 +16,11 @@ export default class UsersController {
    * @paramUse(sortable, filterable)
   */
   public async create({ request, response }: HttpContext) {
-    const { username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds } = request.body();
+    const validatedData = await request.validate({
+      schema: CreateUserValidator,
+      data: request.body(),
+    });
+    const { username, firstname, lastname, email, gender, groupIds, isAdmin, password, phone } = validatedData
     const result = await this.userService.create({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds }, request.user, request.userPermissions);
     return response.status(result.status).json(result);
   }
@@ -105,7 +109,11 @@ export default class UsersController {
    * @paramUse(sortable, filterable)
   */
   public async login({ request, response }: HttpContext) {
-    const { username, password, email } = request.body();
+    const validatedData = await request.validate({
+      schema: UserLoginValidator,
+      data: request.body(),
+    });
+    const { username, password, email } = validatedData
     const result = await this.userService.login({ username, password, email });
     return response.status(result.status).json(result);
   }
@@ -133,8 +141,11 @@ export default class UsersController {
    * @paramUse(sortable, filterable)
   */
   public async refreshToken({ request, response }: HttpContext) {
-    const { refresh } = request.body();
-    const result = await this.userService.refreshToken(refresh);
+    const validatedData = await request.validate({
+      schema: RefreshTokenValidator,
+      data: request.body(),
+    });
+    const result = await this.userService.refreshToken(validatedData.refresh);
     return response.status(result.status).json(result);
   }
 
@@ -194,9 +205,15 @@ export default class UsersController {
    * @paramUse(sortable, filterable)
   */
   public async updateGroupById({ params, request, response }: HttpContext) {
-    const { id } = params;
-    const { name, permission_ids } = request.body();
-    const result = await this.userService.updateGroupById(id, name, permission_ids, request.user, request.userPermissions);
+    const validatedId = await request.validate({
+      schema: UserByIdValidator,
+      data: { id: Number(params.id) },
+    });
+    const validatedBody = await request.validate({
+      schema: UserGroupByIdValidator,
+      data: request.body(),
+    });
+    const result = await this.userService.updateGroupById(validatedId.id, validatedBody.name, validatedBody.permission_ids, request.user, request.userPermissions);
     return response.status(result.status).json(result);
   }
 
@@ -222,12 +239,10 @@ export default class UsersController {
    * @paramUse(sortable, filterable)
   */
   public async createGroup({ request, response }: HttpContext) {
-
     const validatedData = await request.validate({
       schema: CreateGroupValidator,
     });
     const { name, isStatic, permissionsIds } = validatedData;
-
     try {
       const result = await this.userService.createGroup({ name, isStatic, permissionsIds });
       return response.status(result.status).json(result);
