@@ -16,8 +16,7 @@ const provider = new DefaultAuthProvider({
   componentLoader,
   authenticate: async ({ email, password }) => {
     if (email === DEFAULT_ADMIN.email) {
-      console.log(password)
-      return { email };
+      return { email, password };
     }
 
     return null;

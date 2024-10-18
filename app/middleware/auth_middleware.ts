@@ -8,7 +8,7 @@ import { AuthUser } from '#models/AuthUser';
 
 declare module '@adonisjs/core/http' {
   interface Request {
-    user?: any;
+    user?: unknown;
   }
 }
 
@@ -17,8 +17,7 @@ export default class AuthMiddleware {
     try {
       const authHeader = ctx.request.header('Authorization');
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        ctx.response.status(401).send({ error: 'Authorization header is missing or invalid' });
-        return;
+        return ctx.response.status(401).send({ error: 'Authorization header is missing or invalid' });
       }
 
       const token = authHeader.replace('Bearer ', '');
@@ -34,7 +33,7 @@ export default class AuthMiddleware {
 
       ctx.request.user = userdata[0];
       return await next();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error);
       return ctx.response.status(500).send({ message: "Internal Server Error", error });
     }
