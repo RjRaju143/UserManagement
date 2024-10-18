@@ -12,7 +12,6 @@ router.group(() => {
   router.delete('/logout', [UsersController, 'logout']).use(middleware.authenticate())
   router.post('/create', [UsersController, 'create']).use(middleware.authenticate()).use(middleware.permissions())
   router.get('/list', [UsersController, 'getAllUsers']).use(middleware.authenticate()).use(middleware.permissions())
-  ////
   router.get('/groups', [UsersController, 'getGroups']).use(middleware.authenticate()).use(middleware.permissions())
   router.get('/apps/permissions', [PermissionsController, 'userpermissions']).use(middleware.authenticate())
   router.post('/groups', [UsersController, 'createGroup']).use(middleware.authenticate()).use(middleware.permissions())

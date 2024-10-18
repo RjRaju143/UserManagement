@@ -3,12 +3,10 @@ import jwt from 'jsonwebtoken';
 import { AppDataSource } from "#config/database";
 import { jwtConfig } from "#config/jwt";
 import { AuthUser, UserGroup, AuthToken, AuthGroup, AuthGroupPermissions, AuthPermission } from "#models/index"
-import { CreateUserRequest, CreateUserResponse, GetAllUsersResponse, LoginResponse, UpdateUserRequest, LoginRequest, SuperUserRequest, SuperUserResponce, User, UserPermissions, getGroupByIdResponse, getGroupsResponse, UpdateResponse } from "#interface/user_interface"
-import { RefreshTokenResponse } from "#interface/tokens_interface"
+import { CreateUserRequest, CreateUserResponse, GetAllUsersResponse, LoginResponse, UpdateUserRequest, LoginRequest, SuperUserRequest, SuperUserResponce, User, UserPermissions, getGroupByIdResponse, getGroupsResponse, UpdateResponse, RefreshTokenResponse, CreateGroupRequest, CreateGroupResponse, UpdateGroupResponse } from "#interface/index"
 import { createToken, handleGroupUpdates, handleGroupUpdatesForUser } from "#helper/users.helpers"
 import { UserCreationService } from "#service/UserCreate"
 import { In, Like, Not } from 'typeorm';
-import { CreateGroupRequest, CreateGroupResponse, UpdateGroupResponse } from '#interface/groups_interface';
 
 export class UserService {
   private userCreationService: UserCreationService;
@@ -23,12 +21,23 @@ export class UserService {
         return await this.userCreationService.createUser({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds });
       }
 
-      //// TODO:
       if (user.isAdmin || userPermissions.includes('add_user')) {
+        const userGroups = await AppDataSource.manager.find(UserGroup, { where: { user: { id: user.id } } });
+        if (userGroups.length === 0) {
+          return { status: 404, message: "User does not belong to any group." }
+        }
+
+        const userGroupIds = userGroups.map(ug => ug.group.id);
+        const invalidGroupIds = groupIds.map(id => Number(id)).filter(groupId => !userGroupIds.includes(groupId));
+        if (invalidGroupIds.length > 0) {
+          const invalidNumbers = [...invalidGroupIds];
+          return { status: 400, message: `Invalid group IDs: ${invalidNumbers.join(', ')}` }
+        }
+
         return await this.userCreationService.createUser({ username, password, email, isAdmin, firstname, lastname, phone, gender, groupIds });
       }
 
-      return { status: 403, message: "Forbidden" };
+      return { status: 403, message: "Forbidden" }
     } catch (error: unknown) {
       console.error('Internal Server Error', error);
       return { status: 500, message: 'Internal Server Error' };
@@ -183,11 +192,11 @@ export class UserService {
     return { status: 403, message: "Forbidden" };
   }
 
-  public async updateUser(userId: number, { username, email, isAdmin, firstname, lastname, phone, gender, groupIds }: UpdateUserRequest, user: User, userPermissions: UserPermissions): Promise<UpdateResponse> {
+  public async updateUser(userId: number, { username, email, isAdmin, firstname, lastname, phone, gender, groupIds, isDelete }: UpdateUserRequest, user: User, userPermissions: UserPermissions): Promise<UpdateResponse> {
     try {
       if (user.isSuperuser) {
         const result = await AppDataSource.manager.update(AuthUser, userId, {
-          username, email, isAdmin, firstname, lastname, phone, gender
+          username, email, isAdmin, firstname, lastname, phone, gender, isDelete
         });
 
         if (result.affected === 0) {
@@ -246,15 +255,16 @@ export class UserService {
       const userExist = await AppDataSource.manager.findOne(AuthUser, {
         where: [
           { username },
-          { email }
+          { email },
         ]
       });
 
-      if (!userExist) {
+      if (!userExist || userExist.isDelete) {
         return { status: 404, message: 'User not found' };
       }
 
       const isPasswordValid = await hashing.verify(userExist.password, password);
+      console.log({ isPasswordValid })
       if (!isPasswordValid) {
         return { status: 400, message: "User or Password Incorrect" };
       }
@@ -349,13 +359,12 @@ export class UserService {
             permission_ids: groupPermissions[index].map(p => p.permission?.id),
             reporting_to: group.reporting_to,
             isStatic: group.isStatic,
-            is_delete: group.is_delete,
+            is_delete: group.isDelete,
           };
         });
 
         return { status: 200, results: formattedResults };
       }
-
       if (user.isAdmin || userPermissions.includes('view_groups')) {
         const userGroups = await AppDataSource.manager.find(UserGroup, {
           where: { user: { id: user.id } }

@@ -46,8 +46,9 @@ export interface UpdateUserRequest {
   firstname: string;
   lastname: string;
   phone: number;
-  gender: string;
+  gender: Gender;
   groupIds: any;
+  isDelete: boolean;
 }
 
 export interface LoginResponse {

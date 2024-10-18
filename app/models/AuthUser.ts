@@ -72,8 +72,8 @@ export class AuthUser extends BaseEntity {
     @Column({ type: 'varchar', nullable: true })
     address: string | null = null;
 
-    @Column({ type: 'integer' })
-    pincode!: number;
+    @Column({ type: 'integer', default: null })
+    pincode!: number | null;
 
     @Column({ type: 'varchar', nullable: true })
     erpCode: string | null = null;

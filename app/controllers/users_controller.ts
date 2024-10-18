@@ -1,6 +1,6 @@
 import { inject } from '@adonisjs/core';
 import type { HttpContext } from '@adonisjs/core/http';
-import { UserService } from '../service/users_service.js';
+import { UserService } from '#service/users_service';
 import { CreateGroupValidator, UserByIdValidator, UserUpdateValidator } from '#validator/CreateGroupValidator';
 
 @inject()
@@ -91,8 +91,8 @@ export default class UsersController {
     } catch (error) {
       return response.status(422).json({ message: error.messages });
     }
-    const { username, email, isAdmin, firstname, lastname, phone, gender, groupIds } = request.body();
-    const result = await this.userService.updateUser(id, { username, email, isAdmin, firstname, lastname, phone, gender, groupIds }, request.user, request.userPermissions);
+    const { username, email, isAdmin, firstname, lastname, phone, gender, groupIds, isDelete } = request.body();
+    const result = await this.userService.updateUser(id, { username, email, isAdmin, firstname, lastname, phone, gender, groupIds, isDelete }, request.user, request.userPermissions);
     return response.status(result.status).json(result);
   }
 
