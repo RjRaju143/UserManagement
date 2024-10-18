@@ -52,7 +52,7 @@ const adminjsConfig: AdminJSProviderConfig = {
       },
     },
     branding: {
-      companyName: 'AdminJS',
+      companyName: 'UserManagement',
       theme: {},
     },
     settings: {
