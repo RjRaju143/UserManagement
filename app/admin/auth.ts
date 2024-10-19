@@ -1,24 +1,34 @@
 import { DefaultAuthProvider } from 'adminjs'
-
+import hashing from '@adonisjs/core/services/hash';
 import componentLoader from './component_loader.js'
-import { DEFAULT_ADMIN } from "./constants.js"
+import { AppDataSource } from '#config/database';
+import { AuthUser } from '#models/AuthUser';
 
-/**
- * Your "authenticate" function. Depending on the auth provider used, the payload may be different.
- *
- * The default authentication provider uses email and password to authenticate. You can modify this
- * function to use email & password to verify if the User exists and if their passwords match.
- *
- * The default implementation below will let any in, so make sure to update it.
- */
+export const userExist = async (identifier: string | undefined, password: string) => {
+  const user = await AppDataSource.manager.findOne(AuthUser, {
+    where: [{ username: identifier }, { email: identifier }]
+  });
+  if (!user || user.isDelete) {
+    return false
+  }
+  const isPasswordValid = await hashing.verify(user.password, password);
+  if (!isPasswordValid) {
+    return false
+  }
+  return user
+}
 
 const provider = new DefaultAuthProvider({
   componentLoader,
-  authenticate: async ({ email, password }) => {
-    if (email === DEFAULT_ADMIN.email) {
-      return { email, password };
+  authenticate: async ({ username, email, password }) => {
+    const identifier = username || email;
+    const user = await userExist(identifier, password);
+    if (!user) {
+      return null;
     }
-
+    if (user.isSuperuser) {
+      return { username: user.username, email: user.email, password: user.password };
+    }
     return null;
   },
 });

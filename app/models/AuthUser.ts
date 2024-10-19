@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from 'typeorm';
-import { Gender } from "#interface/user_interface"
+import { Gender } from "#interfaces/index"
 
 @Entity('auth_user')
 export class AuthUser extends BaseEntity {

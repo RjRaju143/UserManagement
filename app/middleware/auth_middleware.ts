@@ -5,10 +5,11 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import '@adonisjs/core/http';
 import { AppDataSource } from '#config/database';
 import { AuthUser } from '#models/AuthUser';
+import { User } from '#interfaces/index';
 
 declare module '@adonisjs/core/http' {
   interface Request {
-    user?: unknown;
+    user: User;
   }
 }
 

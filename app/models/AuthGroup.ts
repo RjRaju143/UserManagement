@@ -2,24 +2,18 @@ import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from 'typeorm';
 
 @Entity('auth_group')
 export class AuthGroup extends BaseEntity {
-    constructor() {
-        super();
-        this.name = '';
-        this.isStatic = false;
-        this.isDelete = false;
-    }
     @PrimaryGeneratedColumn()
     id?: number;
 
     @Column({ type: 'varchar', unique: true })
-    name: string;
+    name!: string;
 
     @Column({ type: 'varchar', nullable: true })
-    reporting_to?: string;
+    reporting_to!: string;
 
     @Column({ type: 'boolean', default: false })
-    isStatic: boolean;
+    isStatic!: boolean;
 
     @Column({ type: 'boolean', default: false })
-    isDelete: boolean;
+    isDelete!: boolean;
 }

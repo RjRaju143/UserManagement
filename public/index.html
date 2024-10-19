@@ -8,17 +8,31 @@
     <style>
         body {
             background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50vh;
+            margin: 0;
         }
 
         p,
         i {
             color: white;
+            font-size: 50px;
+        }
+
+        #url {
+            text-decoration: line-through;
         }
     </style>
 </head>
 
 <body>
-    <p><i>Hello World</i></p>
+    <p><i>Hello <span id="url"></span></i></p>
+    <script>
+        const currentUrl = window.location.href;
+        document.getElementById('url').textContent = currentUrl;
+    </script>
 </body>
 
 </html>

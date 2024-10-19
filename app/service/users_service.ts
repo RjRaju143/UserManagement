@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { AppDataSource } from "#config/database";
 import { jwtConfig } from "#config/jwt";
 import { AuthUser, UserGroup, AuthToken, AuthGroup, AuthGroupPermissions, AuthPermission } from "#models/index"
-import { CreateUserRequest, CreateUserResponse, GetAllUsersResponse, LoginResponse, UpdateUserRequest, LoginRequest, SuperUserRequest, SuperUserResponce, User, UserPermissions, getGroupByIdResponse, getGroupsResponse, UpdateResponse, RefreshTokenResponse, CreateGroupRequest, CreateGroupResponse, UpdateGroupResponse } from "#interface/index"
+import { CreateUserRequest, CreateUserResponse, GetAllUsersResponse, LoginResponse, UpdateUserRequest, LoginRequest, SuperUserRequest, SuperUserResponce, User, UserPermissions, getGroupByIdResponse, getGroupsResponse, UpdateResponse, RefreshTokenResponse, CreateGroupRequest, CreateGroupResponse, UpdateGroupResponse } from "#interfaces/index"
 import { createToken, handleGroupUpdates, handleGroupUpdatesForUser } from "#helper/users.helpers"
 import { UserCreationService } from "#service/UserCreate"
 import { In, Like, Not } from 'typeorm';

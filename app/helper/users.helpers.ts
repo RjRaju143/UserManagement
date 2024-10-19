@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { AuthGroup, AuthToken, UserGroup } from '#models/index';
 import { jwtConfig } from '#config/jwt';
 import { AppDataSource } from '#config/database';
-import { TokenData, TokenResponce } from "#interface/tokens_interface"
+import { TokenData, TokenResponce } from "#interfaces/index"
 
 export const createToken = async (data: TokenData): Promise<TokenResponce | Error> => {
     try {

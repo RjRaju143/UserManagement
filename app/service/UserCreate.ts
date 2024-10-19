@@ -1,7 +1,7 @@
 import hashing from '@adonisjs/core/services/hash';
 import { AppDataSource } from "#config/database";
 import { AuthGroup, AuthUser, UserGroup } from "#models/index"
-import { CreateUserRequest, CreateUserResponse } from "#interface/user_interface"
+import { CreateUserRequest, CreateUserResponse } from "#interfaces/index"
 import { In } from 'typeorm';
 
 export class UserCreationService {

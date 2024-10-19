@@ -100,3 +100,33 @@ export interface getGroupsResponse {
 }
 
 export type UpdateResponse = any;
+
+export interface UserResponce {
+  id?: number;
+  username?: string;
+  password?: string;
+  email?: string;
+  isAdmin?: boolean;
+  isSuperuser?: boolean;
+  isStaff?: boolean;
+  isGuest?: boolean;
+  isDefaultPassword?: boolean;
+  firstname?: string;
+  lastname?: string;
+  phone?: number;
+  otp?: number | null;
+  latitude?: string;
+  longitude?: string;
+  gender?: string | null,
+  isEmailVerified?: boolean;
+  isActive?: boolean;
+  isPhoneVerified?: boolean;
+  userType?: string;
+  lastLogin?: string | null;
+  deviceAccess?: string | null,
+  address?: string | null,
+  pincode?: number | null;
+  erpCode?: number | null;
+  erpId?: number | null;
+  isDelete?: boolean;
+}
