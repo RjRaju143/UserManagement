@@ -1,0 +1,1241 @@
+openapi: "3.0.0"
+info:
+  title: "User Managament"
+  version: "1.0.0"
+  description: "This is a User Managament project"
+components:
+  responses:
+    Forbidden:
+      description: "Access token is missing or invalid"
+    Accepted:
+      description: "The request was accepted"
+    Created:
+      description: "The resource has been created"
+    NotFound:
+      description: "The resource has been created"
+    NotAcceptable:
+      description: "The resource has been created"
+  securitySchemes:
+    BearerAuth:
+      type: "http"
+      scheme: "bearer"
+      bearerFormat: "JWT"
+    BasicAuth:
+      type: "http"
+      scheme: "basic"
+    ApiKeyAuth:
+      type: "apiKey"
+      in: "header"
+      name: "X-API-Key"
+  schemas:
+    Any:
+      description: "Any JSON object not defined as schema"
+    PaginationMeta:
+      type: "object"
+      properties:
+        total:
+          type: "number"
+          example: 100
+          nullable: false
+        page:
+          type: "number"
+          example: 2
+          nullable: false
+        perPage:
+          type: "number"
+          example: 10
+          nullable: false
+        currentPage:
+          type: "number"
+          example: 3
+          nullable: false
+        lastPage:
+          type: "number"
+          example: 10
+          nullable: false
+        firstPage:
+          type: "number"
+          example: 1
+          nullable: false
+        lastPageUrl:
+          type: "string"
+          example: "/?page=10"
+          nullable: false
+        firstPageUrl:
+          type: "string"
+          example: "/?page=1"
+          nullable: false
+        nextPageUrl:
+          type: "string"
+          example: "/?page=6"
+          nullable: false
+        previousPageUrl:
+          type: "string"
+          example: "/?page=5"
+          nullable: false
+    CreateGroupRequest:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          nullable: false
+          example: "John Doe"
+        isStatic:
+          type: "boolean"
+          nullable: false
+          example: true
+        permissionsIds:
+          type: "array"
+          items:
+            type: "number"
+            nullable: false
+            example: 536
+      description: "CreateGroupRequest (Interface)"
+    CreateGroupResponse:
+      type: "object"
+      properties:
+        status:
+          type: "number"
+          nullable: false
+          example: 967
+        id:
+          type: "number"
+          nullable: true
+          example: 463
+        message:
+          type: "string"
+          nullable: true
+          example: "Lorem Ipsum"
+        name:
+          type: "string"
+          nullable: true
+          example: "John Doe"
+        permission_ids:
+          type: "array"
+          items:
+            type: "number"
+            nullable: true
+            example: 388
+        static:
+          type: "boolean"
+          nullable: true
+          example: true
+      description: "CreateGroupResponse (Interface)"
+    UpdateGroupResponse: {}
+    TokenData:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+          nullable: true
+          example: 725
+        userType:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+      description: "TokenData (Interface)"
+    TokenResponce:
+      type: "object"
+      properties:
+        accessToken:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        refreshToken:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+      description: "TokenResponce (Interface)"
+    RefreshTokenResponse:
+      type: "object"
+      properties:
+        status:
+          type: "number"
+          nullable: false
+          example: 105
+        message:
+          type: "string"
+          nullable: true
+          example: "Lorem Ipsum"
+        accessToken:
+          type: "string"
+          nullable: true
+          example: "Lorem Ipsum"
+      description: "RefreshTokenResponse (Interface)"
+    CreateUserRequest:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        password:
+          type: "string"
+          nullable: false
+          example: "S3cur3P4s5word!"
+        email:
+          type: "string"
+          nullable: false
+          example: "johndoe@example.com"
+        isAdmin:
+          type: "boolean"
+          nullable: true
+          example: true
+        firstname:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        lastname:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        phone:
+          type: "number"
+          nullable: false
+          example: 145
+        gender:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        groupIds:
+          type: "array"
+          items:
+            type: "number"
+            nullable: false
+            example: 91
+      description: "CreateUserRequest (Interface)"
+    CreateUserResponse: {}
+    GetAllUsersResponse:
+      type: "object"
+      properties:
+        status:
+          type: "number"
+          nullable: false
+          example: 603
+        results:
+          type: "Array<{}>"
+          nullable: true
+          $ref: "#/components/schemas/Array<{}>"
+          example: null
+        message:
+          type: "any"
+          nullable: true
+          example: null
+        total:
+          type: "number"
+          nullable: true
+          example: 244
+        page:
+          type: "number"
+          nullable: true
+          example: 884
+        page_size:
+          type: "number"
+          nullable: true
+          example: 961
+        total_pages:
+          type: "number"
+          nullable: true
+          example: 149
+      description: "GetAllUsersResponse (Interface)"
+    UpdateUserRequest:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        email:
+          type: "string"
+          nullable: false
+          example: "johndoe@example.com"
+        isAdmin:
+          type: "boolean"
+          nullable: true
+          example: true
+        firstname:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        lastname:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        phone:
+          type: "number"
+          nullable: false
+          example: 436
+        gender:
+          type: "Gender"
+          nullable: false
+          $ref: "#/components/schemas/Gender"
+          example: null
+        groupIds:
+          type: "any"
+          nullable: false
+          example: null
+        isDelete:
+          type: "boolean"
+          nullable: false
+          example: true
+      description: "UpdateUserRequest (Interface)"
+    LoginResponse:
+      type: "object"
+      properties:
+        status:
+          type: "number"
+          nullable: false
+          example: 113
+        accessToken:
+          type: "string"
+          nullable: true
+          example: "Lorem Ipsum"
+        refreshToken:
+          type: "string"
+          nullable: true
+          example: "Lorem Ipsum"
+        message:
+          type: "string"
+          nullable: true
+          example: "Lorem Ipsum"
+      description: "LoginResponse (Interface)"
+    LoginRequest:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+          nullable: true
+          example: "Lorem Ipsum"
+        email:
+          type: "string"
+          nullable: true
+          example: "johndoe@example.com"
+        password:
+          type: "string"
+          nullable: false
+          example: "S3cur3P4s5word!"
+      description: "LoginRequest (Interface)"
+    SuperUserRequest:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        password:
+          type: "string"
+          nullable: false
+          example: "S3cur3P4s5word!"
+      description: "SuperUserRequest (Interface)"
+    SuperUserResponce:
+      type: "object"
+      properties:
+        status:
+          type: "number"
+          nullable: false
+          example: 598
+        message:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+      description: "SuperUserResponce (Interface)"
+    User: {}
+    getGroupByIdResponse:
+      type: "object"
+      properties:
+        status:
+          type: "number"
+          nullable: false
+          example: 601
+        message:
+          type: "string"
+          nullable: true
+          example: "Lorem Ipsum"
+        id:
+          type: "number"
+          nullable: true
+          example: 631
+        name:
+          type: "string"
+          nullable: true
+          example: "John Doe"
+        permissions:
+          type: "any"
+          nullable: true
+          example: null
+        reporting_to_id:
+          type: "any"
+          nullable: true
+          example: null
+        groupdetails:
+          type: "any"
+          nullable: true
+          example: null
+      description: "getGroupByIdResponse (Interface)"
+    getGroupsResponse: {}
+    UserResponce:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+          nullable: true
+          example: 289
+        username:
+          type: "string"
+          nullable: true
+          example: "Lorem Ipsum"
+        password:
+          type: "string"
+          nullable: true
+          example: "S3cur3P4s5word!"
+        email:
+          type: "string"
+          nullable: true
+          example: "johndoe@example.com"
+        isAdmin:
+          type: "boolean"
+          nullable: true
+          example: true
+        isSuperuser:
+          type: "boolean"
+          nullable: true
+          example: true
+        isStaff:
+          type: "boolean"
+          nullable: true
+          example: true
+        isGuest:
+          type: "boolean"
+          nullable: true
+          example: true
+        isDefaultPassword:
+          type: "boolean"
+          nullable: true
+          example: true
+        firstname:
+          type: "string"
+          nullable: true
+          example: "Lorem Ipsum"
+        lastname:
+          type: "string"
+          nullable: true
+          example: "Lorem Ipsum"
+        phone:
+          type: "number"
+          nullable: true
+          example: 666
+        otp:
+          type: "number | null"
+          nullable: true
+          $ref: "#/components/schemas/number | null"
+          example: null
+        latitude:
+          type: "string"
+          nullable: true
+          example: "Lorem Ipsum"
+        longitude:
+          type: "string"
+          nullable: true
+          example: "Lorem Ipsum"
+        gender:
+          type: "string | null,"
+          nullable: true
+          $ref: "#/components/schemas/string | null,"
+          example: null
+        isEmailVerified:
+          type: "boolean"
+          nullable: true
+          example: true
+        isActive:
+          type: "boolean"
+          nullable: true
+          example: true
+        isPhoneVerified:
+          type: "boolean"
+          nullable: true
+          example: true
+        userType:
+          type: "string"
+          nullable: true
+          example: "Lorem Ipsum"
+        lastLogin:
+          type: "string | null"
+          nullable: true
+          $ref: "#/components/schemas/string | null"
+          example: null
+        deviceAccess:
+          type: "string | null,"
+          nullable: true
+          $ref: "#/components/schemas/string | null,"
+          example: null
+        address:
+          type: "string | null,"
+          nullable: true
+          $ref: "#/components/schemas/string | null,"
+          example: "1028 Farland Street"
+        pincode:
+          type: "number | null"
+          nullable: true
+          $ref: "#/components/schemas/number | null"
+          example: null
+        erpCode:
+          type: "number | null"
+          nullable: true
+          $ref: "#/components/schemas/number | null"
+          example: null
+        erpId:
+          type: "number | null"
+          nullable: true
+          $ref: "#/components/schemas/number | null"
+          example: null
+        isDelete:
+          type: "boolean"
+          nullable: true
+          example: true
+      description: "UserResponce (Interface)"
+    AuthGroup:
+      type: "object"
+      required: []
+      properties: {}
+      description: "AuthGroup (Model)"
+    AuthPermission:
+      type: "object"
+      required: []
+      properties: {}
+      description: "AuthPermission (Model)"
+    AuthTokens:
+      type: "object"
+      required: []
+      properties: {}
+      description: "AuthTokens (Model)"
+    AuthUser:
+      type: "object"
+      required: []
+      properties: {}
+      description: "AuthUser (Model)"
+    Auth_group_Permissions:
+      type: "object"
+      required: []
+      properties: {}
+      description: "Auth_group_Permissions (Model)"
+    index:
+      type: "object"
+      required: []
+      properties: {}
+      description: "index (Model)"
+    UserGroup:
+      type: "object"
+      required: []
+      properties: {}
+      description: "UserGroup (Model)"
+    userpermissions:
+      type: "object"
+      required: []
+      properties: {}
+      description: "userpermissions (Model)"
+paths:
+  /api/users/su:
+    post:
+      summary: " (su)"
+      description: "Returns **201** (Created) as **application/json**\n\n _app/controllers/users_controller.ts_ - **su**"
+      operationId: "su"
+      parameters: []
+      tags:
+        - "USERS"
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status: 200
+                  message: "string"
+              example:
+                status: 200
+                message: "string"
+          description: "Returns **201** (Created) as **application/json**"
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                username: "string"
+                password: "string"
+            example:
+              username: "string"
+              password: "string"
+  /api/users/login:
+    post:
+      summary: " (login)"
+      description: "Returns **201** (Created) as **application/json**\n\n _app/controllers/users_controller.ts_ - **login**"
+      operationId: "login"
+      parameters: []
+      tags:
+        - "USERS"
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status: 201
+                  accessToken: "string"
+                  refreshToken: "string"
+              example:
+                status: 201
+                accessToken: "string"
+                refreshToken: "string"
+          description: "Returns **201** (Created) as **application/json**"
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                username: "string"
+                password: "string"
+            example:
+              username: "string"
+              password: "string"
+  /api/users/token/refresh:
+    post:
+      summary: " (refreshToken)"
+      description: "Returns **201** (Created) as **application/json**\n\n _app/controllers/users_controller.ts_ - **refreshToken**"
+      operationId: "refreshToken"
+      parameters: []
+      tags:
+        - "USERS"
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status: 200
+                  accessToken: "string"
+                  refreshToken: "string"
+              example:
+                status: 200
+                accessToken: "string"
+                refreshToken: "string"
+          description: "Returns **201** (Created) as **application/json**"
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                refresh: "string"
+            example:
+              refresh: "string"
+  /api/users/logout:
+    delete:
+      summary: " (logout)"
+      description: "logout user.\n\n _app/controllers/users_controller.ts_ - **logout**"
+      operationId: "logout"
+      parameters: []
+      tags:
+        - "USERS"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status: "200"
+                  message: "string"
+              example:
+                status: "200"
+                message: "string"
+          description: "Returns **200** (OK) as **application/json**"
+      security: []
+  /api/users/create:
+    post:
+      summary: " (create)"
+      description: "Returns **201** (Created) as **application/json**\n\n _app/controllers/users_controller.ts_ - **create**"
+      operationId: "createUserGroup"
+      parameters: []
+      tags:
+        - "USERS"
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  username: "string"
+                  password: "string"
+                  email: "string@example.com"
+                  isAdmin: "boolean"
+                  firstname: "string"
+                  lastname: "string"
+                  phone: "number"
+                  gender: "string"
+                  groups:
+                    type: "object"
+                    properties:
+                      0:
+                        type: "object"
+                        properties:
+                          id: "number"
+                          name: "string"
+                  group_ids:
+                    type: "object"
+                    properties:
+                      0: "number"
+              example:
+                username: "string"
+                password: "string"
+                email: "string@example.com"
+                isAdmin: "boolean"
+                firstname: "string"
+                lastname: "string"
+                phone: "number"
+                gender: "string"
+                groups:
+                  - id: "number"
+                    name: "string"
+                group_ids:
+                  - "number"
+          description: "Returns **201** (Created) as **application/json**"
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                username: "string"
+                password: "string"
+                email: "string"
+                isAdmin: "boolean"
+                firstname: "string"
+                lastname: "string"
+                phone: "number"
+                gender: "string"
+                groupIds:
+                  type: "object"
+                  properties:
+                    0: "numbers"
+            example:
+              username: "string"
+              password: "string"
+              email: "string"
+              isAdmin: "boolean"
+              firstname: "string"
+              lastname: "string"
+              phone: "number"
+              gender: "string"
+              groupIds:
+                - "numbers"
+  /api/users/list:
+    get:
+      summary: " (getAllUsers)"
+      description: "Returns **200** (OK) as **application/json**\n\n _app/controllers/users_controller.ts_ - **getAllUsers**"
+      operationId: "getAllUsers"
+      parameters: []
+      tags:
+        - "USERS"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status: 200
+                  results:
+                    type: "object"
+                    properties:
+                      0:
+                        type: "object"
+                        properties:
+                          id: "number"
+                          username: "string"
+                          email: "string@example.com"
+                          isAdmin: "boolean"
+                          isSuperuser: "boolean"
+                          isStaff: "boolean"
+                          isGuest: "boolean"
+                          isDefaultPassword: "boolean"
+                          firstname: "string"
+                          lastname: "string"
+                          phone: "number"
+                          otp: "null"
+                          latitude: "string"
+                          longitude: "string"
+                          gender: "string"
+                          isEmailVerified: "boolean"
+                          isActive: "boolean"
+                          isPhoneVerified: "boolean"
+                          userType: "string"
+                          lastLogin: "null"
+                          deviceAccess: "null"
+                          address: "string"
+                          pincode: "number"
+                          erpCode: "null"
+                          erpId: "null"
+                          groups:
+                            type: "object"
+                            properties:
+                              0:
+                                type: "object"
+                                properties:
+                                  id: "number"
+                                  name: "string"
+                          group_ids:
+                            type: "object"
+                            properties:
+                              0: "number"
+              example:
+                status: 200
+                results:
+                  - id: "number"
+                    username: "string"
+                    email: "string@example.com"
+                    isAdmin: "boolean"
+                    isSuperuser: "boolean"
+                    isStaff: "boolean"
+                    isGuest: "boolean"
+                    isDefaultPassword: "boolean"
+                    firstname: "string"
+                    lastname: "string"
+                    phone: "number"
+                    otp: "null"
+                    latitude: "string"
+                    longitude: "string"
+                    gender: "string"
+                    isEmailVerified: "boolean"
+                    isActive: "boolean"
+                    isPhoneVerified: "boolean"
+                    userType: "string"
+                    lastLogin: "null"
+                    deviceAccess: "null"
+                    address: "string"
+                    pincode: "number"
+                    erpCode: "null"
+                    erpId: "null"
+                    groups:
+                      - id: "number"
+                        name: "string"
+                    group_ids:
+                      - "number"
+          description: "Returns **200** (OK) as **application/json**"
+      security: []
+  /api/users/groups:
+    get:
+      summary: " (getGroups)"
+      description: "Returns **200** (OK) as **application/json**\n\n _app/controllers/users_controller.ts_ - **getGroups**"
+      operationId: "getGroups"
+      parameters: []
+      tags:
+        - "USERS"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  results:
+                    type: "object"
+                    properties:
+                      0:
+                        type: "object"
+                        properties:
+                          id: "number"
+                          name: "string"
+                          permission_ids:
+                            type: "object"
+                            properties:
+                              0: "number"
+                          reporting_to: "string"
+                          isStatic: "boolean"
+                          is_delete: "boolean"
+              example:
+                results:
+                  - id: "number"
+                    name: "string"
+                    permission_ids:
+                      - "number"
+                    reporting_to: "string"
+                    isStatic: "boolean"
+                    is_delete: "boolean"
+          description: "Returns **200** (OK) as **application/json**"
+      security: []
+    post:
+      summary: " (createGroup)"
+      description: "Returns **201** (Created) as **application/json**\n\n _app/controllers/users_controller.ts_ - **createGroup**"
+      operationId: "user"
+      parameters: []
+      tags:
+        - "USERS"
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  name: "string"
+                  isStatic: "boolean"
+                  permissionsIds:
+                    type: "object"
+                    properties:
+                      0: "number"
+              example:
+                name: "string"
+                isStatic: "boolean"
+                permissionsIds:
+                  - "number"
+          description: "Returns **201** (Created) as **application/json**"
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                name: "string"
+                isStatic: "boolean"
+                permissionsIds:
+                  type: "object"
+                  properties:
+                    0: "number"
+            example:
+              name: "string"
+              isStatic: "boolean"
+              permissionsIds:
+                - "number"
+  /api/users/apps/permissions:
+    get:
+      summary: " (userpermissions)"
+      description: "Creates a new Permissions with specified codes.\n\n _app/controllers/permissions_controller.ts_ - **userpermissions**"
+      operationId: "user"
+      parameters: []
+      tags:
+        - "USERS"
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status: 201
+                  savedAuthPermissions:
+                    type: "object"
+                    properties:
+                      0:
+                        type: "object"
+                        properties:
+                          id: "number"
+                          name: "string"
+                          codename: "string"
+              example:
+                status: 201
+                savedAuthPermissions:
+                  - id: "number"
+                    name: "string"
+                    codename: "string"
+          description: "Returns **201** (Created) as **application/json**"
+      security: []
+  /api/users/groups/{id}:
+    get:
+      summary: " (getGroupById)"
+      description: "Returns **200** (OK) as **application/json**\n\n _app/controllers/users_controller.ts_ - **getGroupById**"
+      operationId: "getGroupById"
+      parameters:
+        - in: "path"
+          name: "id"
+          schema:
+            type: "string"
+          required: true
+      tags:
+        - "USERS"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status: "number"
+                  id: "number"
+                  name: "string"
+                  permissions:
+                    type: "object"
+                    properties:
+                      0: "number"
+                  reporting_to_id: "number"
+                  groupdetails:
+                    type: "object"
+                    properties:
+                      group: "number"
+                      reporting_to: "number"
+              example:
+                status: "number"
+                id: "number"
+                name: "string"
+                permissions:
+                  - "number"
+                reporting_to_id: "number"
+                groupdetails:
+                  group: "number"
+                  reporting_to: "number"
+          description: "Returns **200** (OK) as **application/json**"
+      security: []
+    put:
+      summary: " (updateGroupById)"
+      description: "update group with specified permissions.\n\n _app/controllers/users_controller.ts_ - **updateGroupById**"
+      operationId: "updateGroupById"
+      parameters:
+        - in: "path"
+          name: "id"
+          schema:
+            type: "string"
+          required: true
+      tags:
+        - "USERS"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status: "number"
+                  id: "number"
+                  name: "string"
+                  permissions:
+                    type: "object"
+                    properties:
+                      0: "number"
+                  reporting_to_id: "number"
+                  groupdetails:
+                    type: "object"
+                    properties:
+                      group: "number"
+                      reporting_to: "number"
+              example:
+                status: "number"
+                id: "number"
+                name: "string"
+                permissions:
+                  - "number"
+                reporting_to_id: "number"
+                groupdetails:
+                  group: "number"
+                  reporting_to: "number"
+          description: "Returns **200** (OK) as **application/json**"
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                name: "string"
+                permission_ids:
+                  type: "object"
+                  properties:
+                    0: "number"
+                    1: "number"
+            example:
+              name: "string"
+              permission_ids:
+                - "number"
+                - "number"
+  /api/users/{id}:
+    get:
+      summary: " (getUserById)"
+      description: "Returns **200** (OK) as **application/json**\n\n _app/controllers/users_controller.ts_ - **getUserById**"
+      operationId: "getByIdUserGroup"
+      parameters:
+        - in: "path"
+          name: "id"
+          schema:
+            type: "string"
+          required: true
+      tags:
+        - "USERS"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status: 200
+                  users:
+                    type: "object"
+                    properties:
+                      0:
+                        type: "object"
+                        properties:
+                          id: "number"
+                          username: "string"
+                          email: "string@example.com"
+                          isAdmin: "boolean"
+                          isSuperuser: "boolean"
+                          isStaff: "boolean"
+                          isGuest: "boolean"
+                          isDefaultPassword: "boolean"
+                          firstname: "string"
+                          lastname: "string"
+                          phone: "number"
+                          otp: "null"
+                          latitude: "string"
+                          longitude: "string"
+                          gender: "string"
+                          isEmailVerified: "boolean"
+                          isActive: "boolean"
+                          isPhoneVerified: "boolean"
+                          userType: "string"
+                          lastLogin: "null"
+                          deviceAccess: "null"
+                          address: "string"
+                          pincode: "number"
+                          erpCode: "null"
+                          erpId: "null"
+                          groups:
+                            type: "object"
+                            properties:
+                              0:
+                                type: "object"
+                                properties:
+                                  id: "number"
+                                  name: "string"
+                          group_ids:
+                            type: "object"
+                            properties:
+                              0: "number"
+              example:
+                status: 200
+                users:
+                  - id: "number"
+                    username: "string"
+                    email: "string@example.com"
+                    isAdmin: "boolean"
+                    isSuperuser: "boolean"
+                    isStaff: "boolean"
+                    isGuest: "boolean"
+                    isDefaultPassword: "boolean"
+                    firstname: "string"
+                    lastname: "string"
+                    phone: "number"
+                    otp: "null"
+                    latitude: "string"
+                    longitude: "string"
+                    gender: "string"
+                    isEmailVerified: "boolean"
+                    isActive: "boolean"
+                    isPhoneVerified: "boolean"
+                    userType: "string"
+                    lastLogin: "null"
+                    deviceAccess: "null"
+                    address: "string"
+                    pincode: "number"
+                    erpCode: "null"
+                    erpId: "null"
+                    groups:
+                      - id: "number"
+                        name: "string"
+                    group_ids:
+                      - "number"
+          description: "Returns **200** (OK) as **application/json**"
+      security: []
+    put:
+      summary: " (updateUser)"
+      description: "update user group with specified permissions.\n\n _app/controllers/users_controller.ts_ - **updateUser**"
+      operationId: "updateUser"
+      parameters:
+        - in: "path"
+          name: "id"
+          schema:
+            type: "string"
+          required: true
+      tags:
+        - "USERS"
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  username: "string"
+                  password: "string"
+                  email: "string@example.com"
+                  isAdmin: "boolean"
+                  firstname: "string"
+                  lastname: "string"
+                  phone: "number"
+                  gender: "male"
+                  groups:
+                    type: "object"
+                    properties:
+                      0:
+                        type: "object"
+                        properties:
+                          id: "number"
+                          name: "string"
+                  group_ids:
+                    type: "object"
+                    properties:
+                      0: "number"
+              example:
+                username: "string"
+                password: "string"
+                email: "string@example.com"
+                isAdmin: "boolean"
+                firstname: "string"
+                lastname: "string"
+                phone: "number"
+                gender: "male"
+                groups:
+                  - id: "number"
+                    name: "string"
+                group_ids:
+                  - "number"
+          description: "Returns **201** (Created) as **application/json**"
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                username: "string"
+                email: "string"
+                isAdmin: "boolean"
+                firstname: "string"
+                lastname: "string"
+                phone: "number"
+                gender: "string"
+                groupIds:
+                  type: "object"
+                  properties:
+                    0: "numbers"
+            example:
+              username: "string"
+              email: "string"
+              isAdmin: "boolean"
+              firstname: "string"
+              lastname: "string"
+              phone: "number"
+              gender: "string"
+              groupIds:
+                - "numbers"
+tags:
+  - name: "USERS"
+    description: "Everything related to USERS"

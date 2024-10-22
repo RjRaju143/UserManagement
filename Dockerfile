@@ -1,26 +1,30 @@
-FROM node:20.12.2-alpine3.18 AS base
+ARG NODE_VERSION=20.12.2-alpine3.18
+FROM node:${NODE_VERSION} as base
 
-# # Production only deps stage
-# FROM base AS production-deps
-# WORKDIR /app
-# ADD package.json package-lock.json ./
-# # RUN npm install --force
-
-# Build stage
-FROM base AS build
-WORKDIR /app
-COPY package.json package-lock.json ./
+FROM base as build
+WORKDIR /usr/src/app
+COPY package.json yarn.lock ./
 RUN yarn install
 COPY . .
 RUN yarn build
-# COPY --from=deps /app/node_modules /app/node_modules
-# RUN node ace build
 
-# Production stage
-FROM base
-ENV NODE_ENV=production
-WORKDIR /app
-COPY --from=build /app/node_modules /app/node_modules
-COPY --from=build /app/build /app
-EXPOSE 8080
+FROM node:${NODE_VERSION} as final
+WORKDIR /usr/src/app
+ENV NODE_ENV production
+ENV PORT 3000
+ENV HOST 0.0.0.0
+ENV LOG_LEVEL info
+ENV APP_KEY PSrLFnX1TyHSO9a_SlA37U0ZZ0BWJIlv
+ENV DEBUG false
+ENV DB_HOST 192.168.1.108
+ENV DB_PORT 5432
+ENV DB_USER postgres
+ENV DB_PASS postgres
+ENV DB_NAME UserManagement
+ENV JWT_SECRET weirgf3w45vtgwsdfq3bhbggfurtieytgv
+ENV SESSION_DRIVER cookie
+# USER node
+COPY --from=build /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/build ./
+EXPOSE 3000
 CMD ["node", "./bin/server.js"]

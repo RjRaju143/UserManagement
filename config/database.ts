@@ -12,7 +12,16 @@ const dbCredentials = {
   database: env.get('DB_NAME') as string,
 }
 
-const db: any = {
+export const AppDataSource = new DataSource({
+  type: "postgres",
+  ...dbCredentials,
+  logging: env.get('DEBUG'),
+  entities: [AuthGroup, AuthPermission, AuthGroupPermissions, AuthUser, UserGroup, AuthToken],
+  subscribers: [],
+  synchronize: env.get('DEBUG'),
+})
+
+const dbConfig = defineConfig({
   connection: 'postgres',
   connections: {
     postgres: {
@@ -24,18 +33,7 @@ const db: any = {
       },
     },
   },
-}
-
-export const AppDataSource = new DataSource({
-  type: "postgres",
-  ...dbCredentials,
-  logging: env.get('DEBUG'),
-  entities: [AuthGroup, AuthPermission, AuthGroupPermissions, AuthUser, UserGroup, AuthToken],
-  subscribers: [],
-  synchronize: env.get('DEBUG'),
 })
 
-const dbConfig = defineConfig(db)
 export default dbConfig
-
 
