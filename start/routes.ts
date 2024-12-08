@@ -2,8 +2,8 @@ import '@adonisjs/core/services/router'
 import router from '@adonisjs/core/services/router'
 import { middleware } from "#start/kernel"
 
-const UsersController = () => import('#controllers/users_controller')
-const PermissionsController = () => import('#controllers/permissions_controller')
+const UsersController = () => import('../app/User/controllers/users_controller.js')
+const PermissionsController = () => import('../app/User/controllers/permissions_controller.js')
 
 router.group(() => {
   router.post('/su', [UsersController, 'su'])

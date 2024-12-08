@@ -1,7 +1,7 @@
 import { inject } from '@adonisjs/core';
 import type { HttpContext } from '@adonisjs/core/http';
-import { UserService } from '#service/users_service';
-import { CreateGroupValidator, CreateUserValidator, RefreshTokenValidator, UserByIdValidator, UserGroupByIdValidator, UserLoginValidator, UserUpdateValidator } from '#validator/CreateGroupValidator';
+import { UserService } from '../service/users_service.js';
+import { CreateGroupValidator, CreateUserValidator, RefreshTokenValidator, UserByIdValidator, UserGroupByIdValidator, UserLoginValidator, UserUpdateValidator } from '../validator/CreateGroupValidator.js';
 
 @inject()
 export default class UsersController {

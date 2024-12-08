@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, BaseEntity } from 'typeorm';
-import { AuthUser, AuthGroup } from "#models/index"
+import { AuthUser, AuthGroup } from "./index.js"
 
 @Entity('user_group')
 export class UserGroup extends BaseEntity {

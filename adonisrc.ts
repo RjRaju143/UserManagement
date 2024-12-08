@@ -37,7 +37,7 @@ export default defineConfig({
     {
       file: () => import('@adminjs/adonis/adminjs_provider'),
       environment: ['web'],
-    }
+    },
   ],
 
   /*

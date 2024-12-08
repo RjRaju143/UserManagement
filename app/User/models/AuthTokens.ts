@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, BaseEntity } from 'typeorm';
-import { AuthUser } from "#models/index"
+import { AuthUser } from "./index.js"
 
 @Entity('auth_token')
 export class AuthToken extends BaseEntity {

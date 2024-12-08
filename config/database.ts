@@ -2,7 +2,7 @@ import "reflect-metadata"
 import env from '#start/env'
 import { defineConfig } from '@adonisjs/lucid'
 import { DataSource } from "typeorm"
-import { AuthGroup, AuthGroupPermissions, AuthPermission, AuthUser, UserGroup, AuthToken } from "#models/index"
+import { AuthGroup, AuthGroupPermissions, AuthPermission, AuthUser, UserGroup, AuthToken } from "../app/User/models/index.js"
 
 const dbCredentials = {
   host: env.get('DB_HOST'),

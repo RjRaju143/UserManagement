@@ -1,6 +1,6 @@
 import { inject } from '@adonisjs/core';
 import { In } from 'typeorm';
-import { AuthPermission, permissions } from "#models/index"
+import { AuthPermission, permissions } from "../models/index.js"
 import { AppDataSource } from "#config/database";
 
 @inject()

@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "license": "UNLICENSED",
+  "engines": {
+    "node": "22.11.0"
+  },
+  "engineStrict": true,
   "scripts": {
     "start": "node bin/server.js",
     "build": "node ace build",
@@ -16,21 +20,8 @@
   },
   "imports": {
     "#admin/*": "./app/admin/*.js",
-    "#controllers/*": "./app/controllers/*.js",
-    "#service/*": "./app/service/*.js",
-    "#exceptions/*": "./app/exceptions/*.js",
-    "#models/*": "./app/models/*.js",
-    "#interfaces/*": "./app/interfaces/*.js",
-    "#validator/*": "./app/validator/*.js",
-    "#helper/*": "./app/helper/*.js",
-    "#mails/*": "./app/mails/*.js",
-    "#services/*": "./app/services/*.js",
-    "#listeners/*": "./app/listeners/*.js",
-    "#events/*": "./app/events/*.js",
     "#middleware/*": "./app/middleware/*.js",
     "#providers/*": "./providers/*.js",
-    "#policies/*": "./app/policies/*.js",
-    "#abilities/*": "./app/abilities/*.js",
     "#database/*": "./database/*.js",
     "#start/*": "./start/*.js",
     "#tests/*": "./tests/*.js",
@@ -57,6 +48,7 @@
   "dependencies": {
     "@adminjs/adonis": "^1.1.0",
     "@adminjs/express": "^6.1.0",
+    "@adminjs/themes": "^1.0.1",
     "@adminjs/typeorm": "^5.0.1",
     "@adonisjs/auth": "^9.2.3",
     "@adonisjs/core": "^6.12.1",
@@ -68,7 +60,6 @@
     "@tiptap/extension-text-style": "^2.8.0",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
-    "pino-pretty": "^11.2.2",
     "adminjs": "^7.8.13",
     "adonis-autoswagger": "^3.63.0",
     "class-validator": "^0.14.1",

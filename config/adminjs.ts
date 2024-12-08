@@ -1,10 +1,12 @@
 import { AdminJSProviderConfig } from '@adminjs/adonis'
 import AdminJS from "adminjs";
+import { dark, light, noSidebar } from '@adminjs/themes'
 import * as AdminJSTypeorm from "@adminjs/typeorm";
 import componentLoader from '#admin/component_loader'
 import authProvider from '#admin/auth'
-import { AuthUser, AuthGroup, AuthGroupPermissions, AuthPermission, AuthToken, UserGroup } from "#models/index"
+import { AuthUser, AuthGroup, AuthGroupPermissions, AuthPermission, AuthToken, UserGroup } from "../app/User/models/index.js"
 import { AppDataSource } from "#config/database";
+import hashing from '@adonisjs/core/services/hash';
 
 AppDataSource.initialize().then(async () => {
   console.log("db connected !...")
@@ -27,30 +29,34 @@ const adminjsConfig: AdminJSProviderConfig = {
     loginPath: '/admin/login',
     logoutPath: '/admin/logout',
     componentLoader,
-    resources: [AuthUser, AuthGroup, UserGroup, AuthPermission, AuthGroupPermissions, AuthToken],
-    pages: {},
-    locale: {
-      availableLanguages: ['en'],
-      language: 'en',
-      translations: {
-        en: {
-          actions: {},
-          messages: {},
-          labels: {},
-          buttons: {},
-          properties: {},
-          components: {},
-          pages: {},
-          ExampleResource: {
-            actions: {},
-            messages: {},
-            labels: {},
-            buttons: {},
-            properties: {},
-          },
+    resources: [
+      {
+        resource: AuthUser,
+        options: {
+            actions: {
+                new: {
+                    before: async (request:any) => {
+                      if (request.payload && request.payload.password) {
+                        const hashedPassword = await hashing.make(request.payload.password);
+                        request.payload.password = hashedPassword;
+                      }
+                      return request;
+                    },
+                },
+                edit: {
+                    before: async (request:any) => {
+                      if (request.payload && request.payload.password) {
+                          const hashedPassword = await hashing.make(request.payload.password);
+                          request.payload.password = hashedPassword;
+                      }
+                      return request;
+                    },
+                },
+            },
         },
       },
-    },
+      AuthGroup, UserGroup, AuthPermission, AuthGroupPermissions, AuthToken,
+  ],
     branding: {
       companyName: 'UserManagement',
       theme: {},
@@ -58,6 +64,8 @@ const adminjsConfig: AdminJSProviderConfig = {
     settings: {
       defaultPerPage: 10,
     },
+    defaultTheme: dark.id,
+    availableThemes: [dark, light, noSidebar],
   },
   auth: {
     enabled: true,

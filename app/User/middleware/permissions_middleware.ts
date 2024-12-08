@@ -1,6 +1,6 @@
 import { AppDataSource } from '#config/database'
-import { UserPermissions, UserResponce } from '#interfaces/user_interface';
-import { AuthGroupPermissions, UserGroup } from '#models/index'
+import { UserPermissions, UserResponce } from '../interfaces/user_interface.js';
+import { AuthGroupPermissions, UserGroup } from '../models/index.js'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 
