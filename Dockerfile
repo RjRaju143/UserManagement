@@ -1,4 +1,4 @@
-ARG NODE_VERSION=22.11.0-alpine3.18
+ARG NODE_VERSION=22.11.0
 FROM node:${NODE_VERSION} as base
 
 FROM base as build
