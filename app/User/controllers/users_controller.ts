@@ -92,8 +92,8 @@ export default class UsersController {
           ...request.body(),
         },
       });
-    } catch (error) {
-      return response.status(422).json({ message: error.messages });
+    } catch (error: unknown) {
+      return response.status(422).json({ message: error });
     }
     const { username, email, isAdmin, firstname, lastname, phone, gender, groupIds, isDelete } = request.body();
     const result = await this.userService.updateUser(id, { username, email, isAdmin, firstname, lastname, phone, gender, groupIds, isDelete }, request.user, request.userPermissions);
