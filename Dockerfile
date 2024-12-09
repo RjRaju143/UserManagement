@@ -3,7 +3,7 @@ FROM node:${NODE_VERSION} as base
 
 FROM base as build
 WORKDIR /usr/src/app
-COPY package.json yarn.lock ./
+COPY package.json .
 RUN yarn install
 COPY . .
 RUN yarn build
@@ -25,5 +25,5 @@ ENV JWT_SECRET weirgf3w45vtgwsdfq3bhbggfurtieytgv
 ENV SESSION_DRIVER cookie
 # USER node
 COPY --from=build /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/build ./
+COPY --from=build /usr/src/app/build .
 CMD ["node", "./bin/server.js"]
