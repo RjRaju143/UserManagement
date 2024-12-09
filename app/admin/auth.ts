@@ -2,13 +2,13 @@ import { DefaultAuthProvider } from 'adminjs'
 import hashing from '@adonisjs/core/services/hash';
 import componentLoader from './component_loader.js'
 import { AppDataSource } from '#config/database';
-import { AuthUser } from '../User/models/AuthUser.js';
+import { SuperUser } from '../User/models/index.js';
 
 export const userExist = async (identifier: string | undefined, password: string) => {
-  const user = await AppDataSource.manager.findOne(AuthUser, {
-    where: [{ username: identifier }, { email: identifier }]
+  const user = await AppDataSource.manager.findOne(SuperUser, {
+    where: [{ username: identifier }]
   });
-  if (!user || user.isDelete) {
+  if (!user) {
     return false
   }
   const isPasswordValid = await hashing.verify(user.password, password);
@@ -24,14 +24,9 @@ const provider = new DefaultAuthProvider({
     const identifier = username || email;
     const user = await userExist(identifier, password);
     if (!user) {
-      // return null;
-      return { username: "admin", email: "admin", password: "password" };
+      return null;
     }
-    if (user.isSuperuser) {
-      // return { username: user.username, email: user.email, password: user.password };
-      return { username: "admin", email: "admin", password: "password" };
-    }
-    return null;
+    return { username: user.username, email: user.username, password: user.password };
   },
 });
 

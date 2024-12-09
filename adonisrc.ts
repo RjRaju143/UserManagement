@@ -49,7 +49,7 @@ export default defineConfig({
   |
   */
   preloads: [
-    () => import('#start/routes'),
+    () => import('./start/user.routes.js'),
     () => import('#start/swagger'),
     () => import('#start/kernel')
   ],

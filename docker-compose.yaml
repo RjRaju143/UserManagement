@@ -3,7 +3,21 @@ services:
     build:
       context: .
     environment:
-      NODE_ENV: production
+      - NODE_ENV=production
+      - TZ=UTC
+      - PORT=3000
+      - HOST=localhost
+      - LOG_LEVEL=info
+      - APP_KEY=DEsoriyyHSO9a_SlA37U0ZZ0BWJIlvfciugduig
+      - DEBUG=false
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - DB_NAME=dev
+      - JWT_SECRET=weirgf3w45vtgwsdfq3bhbggfurtieytgv
+      - SESSION_DRIVER=cookie
+
     ports:
       - 3000:3000
     depends_on:
@@ -14,7 +28,7 @@ services:
     # volumes:
     #   - db-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=usermanagement
+      - POSTGRES_DB=dev
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     expose:

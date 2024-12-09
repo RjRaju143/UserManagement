@@ -1,0 +1,26 @@
+[
+    {
+        "name": "can change user",
+        "code": "change_user"
+    },
+    {
+        "name": "can add user",
+        "code": "add_user"
+    },
+    {
+        "name": "can view user",
+        "code": "view_user"
+    },
+    {
+        "name": "can delete user",
+        "code": "delete_user"
+    },
+    {
+        "name": "can view groups",
+        "code": "view_groups"
+    },
+    {
+        "name": "can change groups",
+        "code": "change_groups"
+    }
+]

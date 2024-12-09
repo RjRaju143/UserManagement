@@ -5,7 +5,7 @@ export class AuthPermission extends BaseEntity {
     constructor() {
         super();
         this.name = '';
-        this.codename = '';
+        this.code = '';
     }
 
     @PrimaryGeneratedColumn()
@@ -15,6 +15,6 @@ export class AuthPermission extends BaseEntity {
     name: string;
 
     @Column({ type: 'varchar', unique: true })
-    codename: string;
+    code: string;
 
 }

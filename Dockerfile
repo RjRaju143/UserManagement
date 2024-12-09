@@ -26,5 +26,4 @@ ENV SESSION_DRIVER cookie
 # USER node
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/build ./
-EXPOSE 3000
 CMD ["node", "./bin/server.js"]

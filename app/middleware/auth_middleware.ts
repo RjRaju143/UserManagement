@@ -4,8 +4,8 @@ import type { NextFn } from '@adonisjs/core/types/http'
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import '@adonisjs/core/http';
 import { AppDataSource } from '#config/database';
-import { AuthUser } from '../models/AuthUser.js';
-import { User } from '../interfaces/index.js';
+import { AuthUser } from '../User/models/AuthUser.js';
+import { User } from '../User/interfaces/index.js';
 
 declare module '@adonisjs/core/http' {
   interface Request {

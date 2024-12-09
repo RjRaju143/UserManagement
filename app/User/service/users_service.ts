@@ -2,12 +2,11 @@ import hashing from '@adonisjs/core/services/hash';
 import jwt from 'jsonwebtoken';
 import { AppDataSource } from "#config/database";
 import { jwtConfig } from "#config/jwt";
-import { AuthUser, UserGroup, AuthToken, AuthGroup, AuthGroupPermissions, AuthPermission } from "../models/index.js"
+import { AuthUser, UserGroup, AuthToken, AuthGroup, AuthGroupPermissions, AuthPermission, SuperUser } from "../models/index.js"
 import { CreateUserRequest, CreateUserResponse, GetAllUsersResponse, LoginResponse, UpdateUserRequest, LoginRequest, SuperUserRequest, SuperUserResponce, User, UserPermissions, getGroupByIdResponse, getGroupsResponse, UpdateResponse, RefreshTokenResponse, CreateGroupRequest, CreateGroupResponse, UpdateGroupResponse } from "../interfaces/index.js"
 import { createToken, handleGroupUpdates, handleGroupUpdatesForUser } from "../helper/users.helpers.js"
 import { UserCreationService } from "./UserCreate.js"
 import { In, Like, Not } from 'typeorm';
-
 export class UserService {
   private userCreationService: UserCreationService;
 
@@ -281,10 +280,9 @@ export class UserService {
     }
   }
 
-  //// TODO: fix email, firstname, lastname, phone for SuperUser ...
   public async su({ username, password, }: SuperUserRequest): Promise<SuperUserResponce> {
     try {
-      const userExist = await AppDataSource.manager.findOne(AuthUser, {
+      const userExist = await AppDataSource.manager.findOne(SuperUser, {
         where: [
           { username }
         ]
@@ -293,12 +291,12 @@ export class UserService {
         return { status: 400, message: 'User already exist' };
       }
       const hashedPassword = await hashing.make(password);
-      const userData = { username, password: hashedPassword, isSuperuser: true, isAdmin: true, userType: "su", email:"su@superuser.com", firstname:"su", lastname:"su", phone: 1023654789};
-      const newUser = AppDataSource.manager.create(AuthUser, userData);
+      const userData = { username, password: hashedPassword };
+      const newUser = AppDataSource.manager.create(SuperUser, userData)
       await AppDataSource.manager.save(newUser);
       return { status: 201, message: "User Created" };
     } catch (error: unknown) {
-      console.error('Error during login:', error);
+      console.error('Error during user creation:', error);
       return { status: 500, message: 'Internal Server Error' };
     }
   }

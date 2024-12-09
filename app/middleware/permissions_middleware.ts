@@ -1,6 +1,6 @@
 import { AppDataSource } from '#config/database'
-import { UserPermissions, UserResponce } from '../interfaces/user_interface.js';
-import { AuthGroupPermissions, UserGroup } from '../models/index.js'
+import { UserPermissions, UserResponce } from '../User/interfaces/user_interface.js';
+import { AuthGroupPermissions, UserGroup } from '../User/models/index.js'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 
@@ -26,7 +26,7 @@ export default class PermissionsMiddleware {
           where: { group: { id: userGroups[0].group.id } },
           relations: ['group']
         });
-        ctx.request.userPermissions = userPermissions.map(p => p.permission?.codename) as UserPermissions;
+        ctx.request.userPermissions = userPermissions.map(p => p.permission?.code) as UserPermissions;
         return await next()
       }
     } catch (error: unknown) {
