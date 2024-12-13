@@ -27,4 +27,12 @@ list : done
 
 ### static server
 
-node ace add @adonisjs/static -->
+node ace add @adonisjs/static 
+
+node ace add @adonisjs/drive
+
+yarn add @adonisjs/drive
+
+
+-->
+

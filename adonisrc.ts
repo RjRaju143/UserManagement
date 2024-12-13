@@ -38,6 +38,7 @@ export default defineConfig({
       file: () => import('@adminjs/adonis/adminjs_provider'),
       environment: ['web'],
     },
+    () => import('@adonisjs/drive/drive_provider')
   ],
 
   /*
@@ -50,6 +51,7 @@ export default defineConfig({
   */
   preloads: [
     () => import('./start/user.routes.js'),
+    () => import('./start/cloud.routes.js'),
     () => import('#start/swagger'),
     () => import('#start/kernel')
   ],
