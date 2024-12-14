@@ -1,26 +1,42 @@
 [
-    {
-        "name": "can change user",
-        "code": "change_user"
-    },
-    {
-        "name": "can add user",
-        "code": "add_user"
-    },
-    {
-        "name": "can view user",
-        "code": "view_user"
-    },
-    {
-        "name": "can delete user",
-        "code": "delete_user"
-    },
-    {
-        "name": "can view groups",
-        "code": "view_groups"
-    },
-    {
-        "name": "can change groups",
-        "code": "change_groups"
-    }
+  {
+    "name": "can change user",
+    "code": "change_user"
+  },
+  {
+    "name": "can add user",
+    "code": "add_user"
+  },
+  {
+    "name": "can view user",
+    "code": "view_user"
+  },
+  {
+    "name": "can delete user",
+    "code": "delete_user"
+  },
+  {
+    "name": "can view groups",
+    "code": "view_groups"
+  },
+  {
+    "name": "can change groups",
+    "code": "change_groups"
+  },
+  {
+    "name": "can view buckets",
+    "code": "view_buckets"
+  },
+  {
+    "name": "can view upload success buckets",
+    "code": "view_upload_success"
+  },
+  {
+    "name": "can view upload failed buckets",
+    "code": "view_upload_failed"
+  },
+  {
+    "name": "can view bucket objects",
+    "code": "view_bucket_objects"
+  }
 ]

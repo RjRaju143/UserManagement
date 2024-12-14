@@ -17,8 +17,13 @@ services:
       - DB_NAME=dev
       - JWT_SECRET=weirgf3w45vtgwsdfq3bhbggfurtieytgv
       - SESSION_DRIVER=cookie
+      - DRIVE_DISK=fs #s3  #fs
+      - AWS_ACCESS_KEY_ID=XXXXXXXXXX
+      - AWS_SECRET_ACCESS_KEY=XXXXXXXXXX
+      - AWS_REGION=XXXXXXXXXX
+      - S3_BUCKET=XXXXXXXXXX
     ports:
-      - "3000:3000"
+      - '3000:3000'
     depends_on:
       - db
     networks:
@@ -31,9 +36,9 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     expose:
-      - "5432"
+      - '5432'
     healthcheck:
-      test: ["CMD", "pg_isready"]
+      test: ['CMD', 'pg_isready']
       interval: 10s
       timeout: 5s
       retries: 5

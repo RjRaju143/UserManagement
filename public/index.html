@@ -1,38 +1,38 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index</title>
     <style>
-        body {
-            background-color: black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 50vh;
-            margin: 0;
-        }
+      body {
+        background-color: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 50vh;
+        margin: 0;
+      }
 
-        p,
-        i {
-            color: white;
-            font-size: 50px;
-        }
+      p,
+      i {
+        color: white;
+        font-size: 50px;
+      }
 
-        #url {
-            text-decoration: line-through;
-        }
+      #url {
+        text-decoration: line-through;
+      }
     </style>
-</head>
+  </head>
 
-<body>
-    <p><i>Hello <span id="url"></span></i></p>
+  <body>
+    <p>
+      <i>Hello <span id="url"></span></i>
+    </p>
     <script>
-        const currentUrl = window.location.href;
-        document.getElementById('url').textContent = currentUrl;
+      const currentUrl = window.location.href
+      document.getElementById('url').textContent = currentUrl
     </script>
-</body>
-
+  </body>
 </html>

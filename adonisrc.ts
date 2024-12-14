@@ -38,7 +38,7 @@ export default defineConfig({
       file: () => import('@adminjs/adonis/adminjs_provider'),
       environment: ['web'],
     },
-    () => import('@adonisjs/drive/drive_provider')
+    () => import('@adonisjs/drive/drive_provider'),
   ],
 
   /*
@@ -50,10 +50,10 @@ export default defineConfig({
   |
   */
   preloads: [
-    () => import('./start/user.routes.js'),
-    () => import('./start/cloud.routes.js'),
+    () => import('#start/user.routes'),
+    () => import('#start/s3.routes'),
     () => import('#start/swagger'),
-    () => import('#start/kernel')
+    () => import('#start/kernel'),
   ],
 
   /*
@@ -80,8 +80,10 @@ export default defineConfig({
     ],
     forceExit: false,
   },
-  metaFiles: [{
-    pattern: 'public/**',
-    reloadServer: false,
-  }]
+  metaFiles: [
+    {
+      pattern: 'public/**',
+      reloadServer: false,
+    },
+  ],
 })

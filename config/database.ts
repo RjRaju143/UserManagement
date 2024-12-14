@@ -1,8 +1,15 @@
-import "reflect-metadata"
+import 'reflect-metadata'
 import env from '#start/env'
 import { defineConfig } from '@adonisjs/lucid'
-import { DataSource } from "typeorm"
-import { AuthGroup, AuthGroupPermissions, AuthPermission, AuthUser, UserGroup, AuthToken, SuperUser } from "../app/User/models/index.js"
+import { DataSource } from 'typeorm'
+import {
+  AuthGroup,
+  AuthGroupPermissions,
+  AuthPermission,
+  AuthUser,
+  UserGroup,
+  AuthToken,
+} from '../app/User/models/index.js'
 
 const dbCredentials = {
   host: env.get('DB_HOST'),
@@ -13,10 +20,10 @@ const dbCredentials = {
 }
 
 export const AppDataSource = new DataSource({
-  type: "postgres",
+  type: 'postgres',
   ...dbCredentials,
   logging: env.get('DEBUG'),
-  entities: [SuperUser, AuthGroup, AuthPermission, AuthGroupPermissions, AuthUser, UserGroup, AuthToken],
+  entities: [AuthGroup, AuthPermission, AuthGroupPermissions, AuthUser, UserGroup, AuthToken],
   subscribers: [],
   synchronize: env.get('DEBUG'),
 })
@@ -36,4 +43,3 @@ const dbConfig = defineConfig({
 })
 
 export default dbConfig
-

@@ -1,12 +1,12 @@
 import { AppDataSource } from '#config/database'
-import { UserPermissions, UserResponce } from '../User/interfaces/user_interface.js';
+import { UserPermissions, UserResponce } from '../interfaces/index.js'
 import { AuthGroupPermissions, UserGroup } from '../User/models/index.js'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 
 declare module '@adonisjs/core/http' {
   interface Request {
-    userPermissions: UserPermissions;
+    userPermissions: UserPermissions
   }
 }
 
@@ -21,18 +21,30 @@ export default class PermissionsMiddleware {
 
       if (!user.isSuperuser) {
         console.log(`You are USER 🙎 ${user.username}, Admin: ${user.isAdmin}`)
-        const userGroups = await AppDataSource.manager.find(UserGroup, { where: { user: { id: user.id } } });
+        const userGroups = await AppDataSource.manager.find(UserGroup, {
+          where: { user: { id: user.id } },
+        })
+
+        if (userGroups.length === 0) {
+          return ctx.response.status(403).json({
+            status: 403,
+            message: 'User is not part of any group',
+          })
+        }
+
         const userPermissions = await AppDataSource.manager.find(AuthGroupPermissions, {
           where: { group: { id: userGroups[0].group.id } },
-          relations: ['group']
-        });
-        ctx.request.userPermissions = userPermissions.map(p => p.permission?.code) as UserPermissions;
+          relations: ['group'],
+        })
+        ctx.request.userPermissions = userPermissions.map(
+          (p) => p.permission?.code
+        ) as UserPermissions
         return await next()
       }
     } catch (error: unknown) {
       console.error(error)
-      return ctx.response.status(500).json({ status: 500, message: "Internal server error" })
+      return ctx.response.status(500).json({ status: 500, message: 'Internal server error' })
     }
-    return ctx.response.status(403).json({ status: 403, message: "Forbidden" })
+    return ctx.response.status(403).json({ status: 403, message: 'Forbidden' })
   }
 }
