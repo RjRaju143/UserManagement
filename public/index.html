@@ -3,36 +3,404 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index</title>
+    <title>s3 buckets and objects list</title>
     <style>
       body {
-        background-color: black;
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f4f4f9;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+
+      button {
+        display: inline-block;
+        margin: 10px;
+        padding: 10px;
+        font-size: 16px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      .button-container {
         display: flex;
         justify-content: center;
-        align-items: center;
-        height: 50vh;
-        margin: 0;
+        gap: 15px;
+        margin-bottom: 20px;
+        width: 100%;
+        top: 50px;
+        left: 0;
+        z-index: 10;
       }
 
-      p,
-      i {
+      .button-container.static {
+        background-color: transparent;
+        margin: 20px 0;
+      }
+
+      #inputForm {
+        display: none;
+        text-align: center;
+        margin-top: 70px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid #ddd;
+      }
+
+      th,
+      td {
+        padding: 8px 12px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #4caf50;
         color: white;
-        font-size: 50px;
       }
 
-      #url {
-        text-decoration: line-through;
+      td {
+        background-color: #f9f9f9;
+      }
+
+      .no-data {
+        color: black;
+        font-weight: normal;
+      }
+
+      #loadingScreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+        z-index: 9999;
+      }
+
+      .response-container {
+        margin-top: 80px;
+        text-align: center;
+      }
+
+      .red-background {
+        background-color: red !important;
+        color: white;
+      }
+
+      #bucketListDropdown {
+        display: none;
+        text-align: center;
+      }
+
+      select {
+        font-size: 16px;
+        padding: 10px;
+        border-radius: 5px;
+      }
+
+      #loginForm {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 100px;
+      }
+
+      #loginForm input,
+      #loginForm button {
+        margin: 10px;
+        padding: 10px;
+        font-size: 16px;
+      }
+
+      #loginForm button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      #loginForm button:hover {
+        background-color: #45a049;
       }
     </style>
   </head>
 
   <body>
-    <p>
-      <i>Hello <span id="url"></span></i>
-    </p>
+    <h1>s3://buckets and objects list</h1>
+
+    <!-- Login Form -->
+    <div id="loginForm">
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button onclick="login()">Login</button>
+    </div>
+
+    <!-- Button Container -->
+    <div class="button-container" style="display: none">
+      <button onclick="fetchData('api2')">Success list</button>
+      <button onclick="fetchData('api3')">Failed list</button>
+      <button onclick="fetchBucketList()">Fetch Bucket List</button>
+    </div>
+
+    <div id="inputForm" style="display: none; text-align: center">
+      <h3>Enter Values</h3>
+      <label for="page">Page:</label>
+      <input type="number" id="page" name="page" required />
+      <label for="maxBuckets">Max Buckets:</label>
+      <input type="number" id="maxBuckets" name="maxBuckets" required />
+      <button onclick="fetchDataWithInputs()">Submit</button>
+      <button onclick="cancelInputForm()">Cancel</button>
+    </div>
+
+    <div id="loadingScreen">Loading...</div>
+
+    <div id="bucketListDropdown">
+      <h3>Select a Bucket</h3>
+      <select id="bucketSelect" onchange="handleBucketSelect()"></select>
+    </div>
+
+    <div class="response-container">
+      <table id="bucketTable" style="display: none">
+        <thead>
+          <tr>
+            <th>S.No</th>
+            <th>Bucket Name</th>
+            <th>Total Objects</th>
+            <th>Objects Name</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
     <script>
-      const currentUrl = window.location.href
-      document.getElementById('url').textContent = currentUrl
+      function login() {
+        const username = document.querySelector('#username').value
+        const password = document.querySelector('#password').value
+
+        if (!username || !password) {
+          alert('Please fill in both fields.')
+          return
+        }
+        const loginData = { username, password }
+        fetch('/api/users/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(loginData),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status === 201) {
+              localStorage.setItem('accessToken', data.accessToken)
+              localStorage.setItem('refreshToken', data.refreshToken)
+              document.querySelector('#loginForm').style.display = 'none'
+              document.querySelector('.button-container').style.display = 'flex'
+            } else {
+              alert('Login failed User or Password Incorrect. Please try again.')
+            }
+          })
+          .catch((error) => {
+            console.error('Error logging in:', error)
+            alert('Error logging in. Please try again later.')
+          })
+      }
+      function getAuthHeaders() {
+        const accessToken = localStorage.getItem('accessToken')
+        return {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        }
+      }
+      function fetchData(apiType) {
+        const loadingScreen = document.querySelector('#loadingScreen')
+        const table = document.querySelector('#bucketTable')
+        const tableBody = document.querySelector('#bucketTable tbody')
+        loadingScreen.style.display = 'flex'
+        table.style.display = 'none'
+        tableBody.innerHTML = ''
+        let apiUrl = ''
+        switch (apiType) {
+          case 'api2':
+            apiUrl = '/api/s3/upload-success'
+            break
+          case 'api3':
+            apiUrl = '/api/s3/upload-failed'
+            break
+          default:
+            return
+        }
+        fetch(apiUrl, {
+          method: 'GET',
+          headers: getAuthHeaders(),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            loadingScreen.style.display = 'none'
+            table.style.display = 'table'
+            if (Array.isArray(data) && data.length > 0) {
+              let serialNo = 1
+              data.forEach((bucket) => {
+                const row = document.createElement('tr')
+                const serialNoCell = document.createElement('td')
+                const bucketNameCell = document.createElement('td')
+                const objectsCell = document.createElement('td')
+                const objectNamesCell = document.createElement('td')
+                const timestampCell = document.createElement('td')
+                serialNoCell.textContent = serialNo++
+                bucketNameCell.textContent = bucket.BucketName
+                if (Array.isArray(bucket.Objects) && bucket.Objects.length > 0) {
+                  objectsCell.textContent = bucket.Objects.length
+                  const objectNames = bucket.Objects.map((obj) => `<div>${obj.Key}</div>`).join('')
+                  const timestamps = bucket.Objects.map(
+                    (obj) => `<div>${new Date(obj.LastModified).toLocaleString()}</div>`
+                  ).join('')
+                  objectNamesCell.innerHTML = objectNames
+                  timestampCell.innerHTML = timestamps
+                } else {
+                  objectsCell.textContent = 'N/A'
+                  objectsCell.classList.add('no-data', 'red-background')
+                  objectNamesCell.textContent = 'N/A'
+                  objectNamesCell.classList.add('no-data', 'red-background')
+                  timestampCell.textContent = 'N/A'
+                  timestampCell.classList.add('no-data', 'red-background')
+                }
+                row.appendChild(serialNoCell)
+                row.appendChild(bucketNameCell)
+                row.appendChild(objectsCell)
+                row.appendChild(objectNamesCell)
+                row.appendChild(timestampCell)
+                tableBody.appendChild(row)
+              })
+            } else {
+              alert('No bucket data found or data is in an unexpected format.')
+              loadingScreen.innerHTML = 'No bucket data found.'
+            }
+          })
+          .catch((error) => {
+            console.error('Error fetching data:', error)
+            loadingScreen.innerHTML = 'Error loading data. Please try again later.'
+          })
+      }
+      function fetchBucketList() {
+        const loadingScreen = document.querySelector('#loadingScreen')
+        const bucketListDropdown = document.querySelector('#bucketListDropdown')
+        const bucketSelect = document.querySelector('#bucketSelect')
+        loadingScreen.style.display = 'flex'
+        bucketListDropdown.style.display = 'none'
+        fetch('/api/s3/list-buckets', {
+          method: 'GET',
+          headers: getAuthHeaders(),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            loadingScreen.style.display = 'none'
+            if (Array.isArray(data) && data.length > 0) {
+              bucketSelect.innerHTML = ''
+              data.forEach((bucket) => {
+                const option = document.createElement('option')
+                option.value = bucket.Name
+                option.textContent = bucket.Name
+                bucketSelect.appendChild(option)
+              })
+
+              bucketListDropdown.style.display = 'block'
+            } else {
+              alert('No buckets found.')
+            }
+          })
+          .catch((error) => {
+            console.error('Error fetching bucket list:', error)
+            loadingScreen.innerHTML = 'Error loading bucket list. Please try again later.'
+          })
+      }
+
+      function handleBucketSelect() {
+        const selectedBucket = document.querySelector('#bucketSelect').value
+        const loadingScreen = document.querySelector('#loadingScreen')
+        const table = document.querySelector('#bucketTable')
+        const tableBody = document.querySelector('#bucketTable tbody')
+        loadingScreen.style.display = 'flex'
+        table.style.display = 'none'
+        tableBody.innerHTML = ''
+        const apiUrl = `/api/s3/list-buckets/${selectedBucket}`
+        fetch(apiUrl, {
+          method: 'GET',
+          headers: getAuthHeaders(),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            loadingScreen.style.display = 'none'
+            table.style.display = 'table'
+
+            if (Array.isArray(data) && data.length > 0) {
+              let serialNo = 1
+              let totalObjects = data.length
+
+              data.forEach((obj) => {
+                const row = document.createElement('tr')
+                const serialNoCell = document.createElement('td')
+                const bucketNameCell = document.createElement('td')
+                const objectsCell = document.createElement('td')
+                const objectNamesCell = document.createElement('td')
+                const timestampCell = document.createElement('td')
+
+                serialNoCell.textContent = serialNo++
+                bucketNameCell.textContent = selectedBucket
+
+                if (serialNo === 2) {
+                  objectsCell.textContent = '' //totalObjects
+                } else {
+                  objectsCell.textContent = ''
+                }
+
+                objectNamesCell.innerHTML = `<div>${obj.Key}</div>`
+                timestampCell.innerHTML = `<div>${new Date(obj.LastModified).toLocaleString()}</div>`
+
+                row.appendChild(serialNoCell)
+                row.appendChild(bucketNameCell)
+                row.appendChild(objectsCell)
+                row.appendChild(objectNamesCell)
+                row.appendChild(timestampCell)
+                tableBody.appendChild(row)
+              })
+            } else {
+              alert('No objects found in this bucket.')
+            }
+          })
+          .catch((error) => {
+            console.error('Error fetching data for selected bucket:', error)
+            loadingScreen.innerHTML = 'Error loading data. Please try again later.'
+          })
+      }
     </script>
   </body>
 </html>

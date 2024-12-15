@@ -27,7 +27,7 @@ export default class S3Controller {
    * @listBucketObjects
    * @operationId listBucketObjects
    * @description get objects list.
-   * @responseBody 200 - {"Objects": [{"Key": "String","LastModified":"String"}]}
+   * @responseBody 200 - [{"Key": "String","LastModified":"String"},{"Key": "String","LastModified":"String"}]
    * @paramUse(sortable, filterable)
    */
   public async listBucketObjects({ request, response, params }: HttpContext) {
@@ -47,7 +47,7 @@ export default class S3Controller {
    * @objectsUploadSuccess
    * @operationId objectsUploadSuccess
    * @description get success objects list.
-   * @responseBody 200 - {"Buckets": [{"BucketName": "String","Objects": [{"Key": "String","LastModified": "String"}]},{"BucketName": "String","Objects": [{"Key": "String","LastModified": "String"}]}]}
+   * @responseBody 200 - [{"BucketName": "String","Objects": [{"Key": "String","LastModified": "String"}]},{"BucketName": "String","Objects": [{"Key": "String","LastModified": "String"}]}]
    * @paramUse(sortable, filterable)
    */
   public async objectsUploadSuccess({ request, response }: HttpContext) {
@@ -65,7 +65,7 @@ export default class S3Controller {
    * @objectsUploadFailed
    * @operationId objectsUploadFailed
    * @description get failed bucket list.
-   * @responseBody 200 - {"Buckets": [{"BucketName": "String","Objects": []},{"BucketName": "String","Objects": []}]}
+   * @responseBody 200 - [{"BucketName": "String","Objects": []},{"BucketName": "String","Objects": []}]
    * @paramUse(sortable, filterable)
    */
   public async objectsUploadFailed({ request, response }: HttpContext) {
