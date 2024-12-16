@@ -1,5 +1,5 @@
 {
-  "name": "usermanagement",
+  "name": "s3",
   "version": "1.1.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
   "engineStrict": true,
   "scripts": {
     "start": "node bin/server.js",
-    "build": "node ace build",
+    "build": "node ace build && cp -r app/User/Data build/app/User/",
     "dev": "node ace serve --hmr",
     "start:dev": "node ace serve --watch",
     "test": "node ace test",
@@ -77,7 +77,8 @@
   },
   "hotHook": {
     "boundaries": [
-      "./app/middleware/*.ts"
+      "./app/middleware/*.ts",
+      "./*"
     ]
   },
   "overrides": {

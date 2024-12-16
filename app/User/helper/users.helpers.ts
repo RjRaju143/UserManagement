@@ -4,6 +4,11 @@ import { jwtConfig } from '#config/jwt'
 import { AppDataSource } from '#config/database'
 import { TokenData, TokenResponce } from '../../interfaces/index.js'
 
+import { promises as fs } from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
 export const createToken = async (data: TokenData): Promise<TokenResponce | Error> => {
   try {
     const existingToken = await AppDataSource.manager.findOne(AuthToken, {
@@ -102,4 +107,11 @@ export const handleGroupUpdatesForUser = async (userId: number, groupIds: number
       console.log(`Removed group ID ${g} from user ${userId}`)
     })
   )
+}
+
+export const loadPermissions = async () => {
+  const filePath = path.resolve(__dirname, '../Data/userpermissions.json')
+  const fileData = await fs.readFile(filePath, 'utf-8')
+  const permissions = JSON.parse(fileData)
+  return permissions
 }

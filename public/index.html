@@ -167,6 +167,8 @@
       <button onclick="fetchData('api2')">Success list</button>
       <button onclick="fetchData('api3')">Failed list</button>
       <button onclick="fetchBucketList()">Fetch Bucket List</button>
+      <button onclick="logout()">Logout</button>
+      <!-- Logout button -->
     </div>
 
     <div id="inputForm" style="display: none; text-align: center">
@@ -201,6 +203,18 @@
       </table>
     </div>
     <script>
+      // Check if the user is logged in (has accessToken in localStorage)
+      window.onload = function () {
+        const accessToken = localStorage.getItem('accessToken')
+        if (accessToken) {
+          document.querySelector('#loginForm').style.display = 'none'
+          document.querySelector('.button-container').style.display = 'flex'
+        } else {
+          document.querySelector('#loginForm').style.display = 'flex'
+          document.querySelector('.button-container').style.display = 'none'
+        }
+      }
+
       function login() {
         const username = document.querySelector('#username').value
         const password = document.querySelector('#password').value
@@ -225,7 +239,7 @@
               document.querySelector('#loginForm').style.display = 'none'
               document.querySelector('.button-container').style.display = 'flex'
             } else {
-              alert('Login failed User or Password Incorrect. Please try again.')
+              alert('Login failed: User or Password Incorrect. Please try again.')
             }
           })
           .catch((error) => {
@@ -233,10 +247,61 @@
             alert('Error logging in. Please try again later.')
           })
       }
+
+      function logout() {
+        const accessToken = localStorage.getItem('accessToken')
+
+        if (!accessToken) {
+          alert('You are not logged in.')
+          return
+        }
+
+        const loadingScreen = document.querySelector('#loadingScreen')
+        loadingScreen.style.display = 'flex'
+
+        fetch('/api/users/logout', {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            loadingScreen.style.display = 'none'
+
+            if (data.status === 200) {
+              // Clear tokens from localStorage
+              localStorage.removeItem('accessToken')
+              localStorage.removeItem('refreshToken')
+
+              // Reset the UI
+              document.querySelector('#loginForm').style.display = 'flex'
+              document.querySelector('.button-container').style.display = 'none'
+
+              // Clear the table and dropdown contents
+              const tableBody = document.querySelector('#bucketTable tbody')
+              tableBody.innerHTML = ''
+              document.querySelector('#bucketTable').style.display = 'none'
+
+              const bucketSelect = document.querySelector('#bucketSelect')
+              bucketSelect.innerHTML = ''
+              document.querySelector('#bucketListDropdown').style.display = 'none'
+            } else {
+              alert('Logout failed. Please try again later.')
+            }
+          })
+          .catch((error) => {
+            loadingScreen.style.display = 'none'
+            console.error('Error logging out:', error)
+            alert('Error logging out. Please try again later.')
+          })
+      }
+
       function getAuthHeaders() {
         const accessToken = localStorage.getItem('accessToken')
         return {
-          'Authorization': `Bearer ${accessToken}`,
+          'Authorization': `Bearer ${accessToken} `,
           'Content-Type': 'application/json',
         }
       }
@@ -279,9 +344,9 @@
                 bucketNameCell.textContent = bucket.BucketName
                 if (Array.isArray(bucket.Objects) && bucket.Objects.length > 0) {
                   objectsCell.textContent = bucket.Objects.length
-                  const objectNames = bucket.Objects.map((obj) => `<div>${obj.Key}</div>`).join('')
+                  const objectNames = bucket.Objects.map((obj) => `<div> ${obj.Key}</> `).join('')
                   const timestamps = bucket.Objects.map(
-                    (obj) => `<div>${new Date(obj.LastModified).toLocaleString()}</div>`
+                    (obj) => `<div> ${new Date(obj.LastModified).toLocaleString()}</> `
                   ).join('')
                   objectNamesCell.innerHTML = objectNames
                   timestampCell.innerHTML = timestamps
@@ -382,8 +447,8 @@
                   objectsCell.textContent = ''
                 }
 
-                objectNamesCell.innerHTML = `<div>${obj.Key}</div>`
-                timestampCell.innerHTML = `<div>${new Date(obj.LastModified).toLocaleString()}</div>`
+                objectNamesCell.innerHTML = `<div> ${obj.Key}</> `
+                timestampCell.innerHTML = `<div> ${new Date(obj.LastModified).toLocaleString()}</>`
 
                 row.appendChild(serialNoCell)
                 row.appendChild(bucketNameCell)

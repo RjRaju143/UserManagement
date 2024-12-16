@@ -1,8 +1,8 @@
 import { inject } from '@adonisjs/core'
 import { In } from 'typeorm'
 import { AuthPermission /*permissions*/ } from '../models/index.js'
+import { loadPermissions } from '../helper/users.helpers.js'
 import { AppDataSource } from '#config/database'
-import permissions from '../models/userpermissions.json' assert { type: 'json' }
 
 @inject()
 export default class UserGroupsController {
@@ -17,16 +17,19 @@ export default class UserGroupsController {
    */
   public async createUserPermissions() {
     try {
-      const codenames = permissions.map((p) => p.code)
+      const permissions = await loadPermissions()
+      const codenames = permissions.map((p: { code: string }) => p.code)
       const existingPermissions = await AppDataSource.manager.find(AuthPermission, {
         where: { code: In(codenames) },
       })
 
-      const existingCodenames = new Set(existingPermissions.map((p) => p.code))
-      const newPermissions = permissions.filter((p) => !existingCodenames.has(p.code))
+      const existingCodenames = new Set(existingPermissions.map((p: { code: string }) => p.code))
+      const newPermissions = permissions.filter(
+        (p: { code: string }) => !existingCodenames.has(p.code)
+      )
 
       if (newPermissions.length > 0) {
-        const createdPermissions = newPermissions.map((p) => {
+        const createdPermissions = newPermissions.map((p: { name: string; code: string }) => {
           const authPermission = new AuthPermission()
           authPermission.name = p.name
           authPermission.code = p.code

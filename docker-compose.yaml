@@ -3,50 +3,47 @@ services:
     build:
       context: .
     environment:
-      - NODE_ENV=production
-      - TZ=UTC
-      - PORT=3000
-      - HOST=localhost
-      - LOG_LEVEL=info
-      - APP_KEY=DEsoriyyHSO9a_SlA37U0ZZ0BWJIlvfciugduig
-      - DEBUG=false
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASS=postgres
-      - DB_NAME=dev
-      - JWT_SECRET=weirgf3w45vtgwsdfq3bhbggfurtieytgv
-      - SESSION_DRIVER=cookie
-      - DRIVE_DISK=fs #s3  #fs
-      - AWS_ACCESS_KEY_ID=XXXXXXXXXX
-      - AWS_SECRET_ACCESS_KEY=XXXXXXXXXX
-      - AWS_REGION=XXXXXXXXXX
-      - S3_BUCKET=XXXXXXXXXX
+      NODE_ENV: ${NODE_ENV:-production}
+      TZ: ${TZ:-UTC}
+      PORT: ${PORT:-3000}
+      HOST: ${HOST:-0.0.0.0}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      APP_KEY: ${APP_KEY:-28376iufbiwcgu8wbb}
+      DEBUG: ${DEBUG:-true}
+      DB_HOST: ${DB_HOST:-postgres-db}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASS: ${DB_PASS:-postgres}
+      DB_NAME: ${DB_NAME:-dev}
+      JWT_SECRET: ${JWT_SECRET:-3476vcyhxskcbgrvh}
+      SESSION_DRIVER: ${SESSION_DRIVER:-cookie}
+      DRIVE_DISK: ${DRIVE_DISK:-fs} # fs #s3
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-xxxxxxxxxx}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-xxxxxxxxxx}
+      AWS_REGION: ${AWS_REGION:-xxxxxxxxxx}
+      S3_BUCKET: ${S3_BUCKET:-xxxxxxxxxx}
     ports:
-      - '3000:3000'
+      - ${PORT:-3000}:${PORT:-3000}
     depends_on:
-      - db
+      - postgres-db
     networks:
       - backend
 
-  db:
-    image: postgres:latest
+  postgres-db:
+    image: postgres:16
     environment:
-      - POSTGRES_DB=dev
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${postgres}
+    volumes:
+      - postgres-database-16:/var/lib/postgresql/data
     expose:
-      - '5432'
-    healthcheck:
-      test: ['CMD', 'pg_isready']
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - 5432
     networks:
       - backend
 
 volumes:
-  db-data:
+  postgres-database-16:
 
 networks:
   backend:

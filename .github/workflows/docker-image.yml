@@ -25,8 +25,5 @@ jobs:
       - name: Run TypeScript type check
         run: npx tsc --noEmit
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
       - name: Build and run the Docker image
         run: docker compose up -d
