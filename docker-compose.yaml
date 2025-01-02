@@ -9,7 +9,7 @@ services:
       HOST: ${HOST:-0.0.0.0}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       APP_KEY: ${APP_KEY:-28376iufbiwcgu8wbb}
-      DEBUG: ${DEBUG:-true}
+      DEBUG: ${DEBUG:-false}
       DB_HOST: ${DB_HOST:-postgres-db}
       DB_PORT: ${DB_PORT:-5432}
       DB_USER: ${DB_USER:-postgres}

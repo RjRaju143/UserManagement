@@ -1,41 +1,51 @@
 [
   {
+    "id": 1,
     "name": "can change user",
     "code": "change_user"
   },
   {
+    "id": 2,
     "name": "can add user",
     "code": "add_user"
   },
   {
+    "id": 3,
     "name": "can view user",
     "code": "view_user"
   },
   {
+    "id": 4,
     "name": "can delete user",
     "code": "delete_user"
   },
   {
+    "id": 5,
     "name": "can view groups",
     "code": "view_groups"
   },
   {
+    "id": 6,
     "name": "can change groups",
     "code": "change_groups"
   },
   {
+    "id": 7,
     "name": "can view buckets",
     "code": "view_buckets"
   },
   {
+    "id": 8,
     "name": "can view upload success buckets",
     "code": "view_upload_success"
   },
   {
+    "id": 9,
     "name": "can view upload failed buckets",
     "code": "view_upload_failed"
   },
   {
+    "id": 10,
     "name": "can view bucket objects",
     "code": "view_bucket_objects"
   }

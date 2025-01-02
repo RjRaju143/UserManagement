@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: s3-bucket
+namespace: api
 
 resources:
   - namespace.yaml
@@ -12,12 +12,12 @@ resources:
   - registry-secrets.yaml
 
 commonLabels:
-  app: s3-bucket
+  app: api
 
 replicas:
-  - name: s3-bucket
+  - name: api
     count: 1
 
 images:
-  - name: docker.cluster.absol.in/s3-bucket
-    newTag: v2
+  - name: docker.cluster.absol.in/api
+    newTag: v1

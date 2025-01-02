@@ -84,6 +84,15 @@ export default defineConfig({
     {
       pattern: 'public/**',
       reloadServer: false,
+    },{
+      pattern: '**/**.json',
+      reloadServer: false,
+    },{
+      pattern: '**/**.yaml',
+      reloadServer: false,
+    },{
+      pattern: '**/**.yml',
+      reloadServer: false,
     },
   ],
 })

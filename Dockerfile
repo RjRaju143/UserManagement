@@ -8,8 +8,10 @@ RUN yarn install
 COPY . .
 RUN yarn build
 
-FROM node:${NODE_VERSION} AS final
+FROM node:${NODE_VERSION} AS production
 WORKDIR /usr/src/app
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/build .
-CMD ["node", "./bin/server.js"]
+RUN chown -R node:node /usr/src/app
+USER node
+CMD ["pm2","start", "ecosystem.confg.cjs"]

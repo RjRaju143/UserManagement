@@ -1,4 +1,3 @@
-import hashing from '@adonisjs/core/services/hash'
 import jwt from 'jsonwebtoken'
 import { AppDataSource } from '#config/database'
 import { jwtConfig } from '#config/jwt'
@@ -17,8 +16,6 @@ import {
   LoginResponse,
   UpdateUserRequest,
   LoginRequest,
-  SuperUserRequest,
-  SuperUserResponce,
   User,
   UserPermissions,
   getGroupByIdResponse,
@@ -35,6 +32,7 @@ import {
   handleGroupUpdatesForUser,
 } from '../helper/users.helpers.js'
 import { UserCreationService } from './UserCreate.js'
+import { verifyPassword } from "../../helper/index.js"
 import { In, Like, Not } from 'typeorm'
 
 export class UserService {
@@ -358,7 +356,7 @@ export class UserService {
         return { status: 404, message: 'User not found' }
       }
 
-      const isPasswordValid = await hashing.verify(userExist.password, password)
+      const isPasswordValid = await verifyPassword(userExist.password,userExist.salt, password)
       if (!isPasswordValid) {
         return { status: 400, message: 'User or Password Incorrect' }
       }
@@ -372,31 +370,6 @@ export class UserService {
         return { status: 500, message: 'Error creating tokens' }
       }
     } catch (error) {
-      console.error('Error during login:', error)
-      return { status: 500, message: 'Internal Server Error' }
-    }
-  }
-
-  public async su({ username, password }: SuperUserRequest): Promise<SuperUserResponce> {
-    try {
-      const userExist = await AppDataSource.manager.findOne(AuthUser, {
-        where: [{ username }],
-      })
-      if (userExist) {
-        return { status: 400, message: 'User already exist' }
-      }
-      const hashedPassword = await hashing.make(password)
-      const userData = {
-        username,
-        password: hashedPassword,
-        isSuperuser: true,
-        isAdmin: true,
-        userType: 'su',
-      }
-      const newUser = AppDataSource.manager.create(AuthUser, userData)
-      await AppDataSource.manager.save(newUser)
-      return { status: 201, message: 'User Created' }
-    } catch (error: unknown) {
       console.error('Error during login:', error)
       return { status: 500, message: 'Internal Server Error' }
     }

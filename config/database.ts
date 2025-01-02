@@ -25,7 +25,7 @@ export const AppDataSource = new DataSource({
   logging: env.get('DEBUG'),
   entities: [AuthGroup, AuthPermission, AuthGroupPermissions, AuthUser, UserGroup, AuthToken],
   subscribers: [],
-  synchronize: env.get('DEBUG'),
+  synchronize: false,
 })
 
 const dbConfig = defineConfig({

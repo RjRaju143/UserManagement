@@ -26,7 +26,7 @@ export default {
   ],
   snakeCase: true,
   debug: env.get('DEBUG'), // set to true, to get some useful debug output
-  ignore: ['/swagger', '/scalar', '/rapidoc', '/docs', '/admin/*', '/admin'],
+  ignore: ['/swagger', '/scalar', '/rapidoc', '/docs', '/admin/*', '/admin', '/media/*', '/media'],
   preferredPutPatch: 'PUT', // if PUT/PATCH are provided for the same route, prefer PUT
   common: {
     parameters: {}, // OpenAPI conform parameters that are commonly used

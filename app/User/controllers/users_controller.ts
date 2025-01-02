@@ -39,14 +39,17 @@ export default class UsersController {
   }
 
   /**
-   * @getAllUsers
-   * @operationId getAllUsers
+   * @getUsers
+   * @operationId getUsers
    * @description get all user group.
+   * @paramQuery search - search the string in list - @type(string)
+   * @paramQuery page - page number - @type(number)
+   * @paramQuery page_size - pages size - @type(number)
    * @requestBody {"status": 200,"users": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": "boolean","isStaff": "boolean","isGuest": "boolean","isDefaultPassword": "boolean","firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "string","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "number","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
    * @responseBody 200 - {"status": 200,"results": [{"id": "number","username": "string","email": "string@example.com","isAdmin": "boolean","isSuperuser": "boolean","isStaff": "boolean","isGuest": "boolean","isDefaultPassword": "boolean","firstname": "string","lastname": "string","phone": "number","otp": "null","latitude": "string","longitude": "string","gender": "string","isEmailVerified": "boolean","isActive": "boolean","isPhoneVerified": "boolean","userType": "string","lastLogin": "null","deviceAccess": "null","address": "string","pincode": "number","erpCode": "null","erpId": "null","groups": [{"id": "number","name": "string"}],"group_ids": ["number"]}]}
    * @paramUse(sortable, filterable)
    */
-  public async getAllUsers({ request, response }: HttpContext) {
+  public async getUsers({ request, response }: HttpContext) {
     const { search, page = '1', page_size = '10' } = request.qs()
 
     const searchTerm = Array.isArray(search) ? search[0] : search
@@ -142,20 +145,6 @@ export default class UsersController {
   }
 
   /**
-   * @su
-   * @operationId su
-   * @description new super user.
-   * @requestBody {"username":"string","password":"string"}
-   * @responseBody 201 - {"status": 200,"message": "string"}
-   * @paramUse(sortable, filterable)
-   */
-  public async su({ request, response }: HttpContext) {
-    const { username, password } = request.body()
-    const result = await this.userService.su({ username, password })
-    return response.status(result.status).json(result)
-  }
-
-  /**
    * @refreshToken
    * @operationId refreshToken
    * @description create a new accesstoken.
@@ -176,9 +165,9 @@ export default class UsersController {
    * @getGroups
    * @operationId getGroups
    * @description getGroups user group.
-   * @queryParam {string} [search] - Optional search term to filter users by username, email, firstname, or lastname.
-   * @queryParam {number} [page] - Optional search term to filter page.
-   * @queryParam {number} [page_size] - Optional search term to filter page_size.
+   * @paramQuery search - search the string in list - @type(string)
+   * @paramQuery page - page number - @type(number)
+   * @paramQuery page_size - pages size - @type(number)
    * @responseBody 200 - {"results": [{"id": "number","name": "string","permission_ids": ["number"],"reporting_to": "string","isStatic": "boolean","is_delete": "boolean"}]}
    * @paramUse(sortable, filterable)
    */
@@ -265,7 +254,7 @@ export default class UsersController {
 
   /**
    * @createGroup
-   * @operationId user
+   * @operationId create user group
    * @description Creates a new user group with specified permissions.
    * @requestBody {"name": "string","isStatic": "boolean","permissionsIds": ["number"]}
    * @responseBody 201 - {"name": "string","isStatic": "boolean","permissionsIds": ["number"]}

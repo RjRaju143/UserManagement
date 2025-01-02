@@ -1,7 +1,7 @@
-import hashing from '@adonisjs/core/services/hash'
 import { AppDataSource } from '#config/database'
 import { AuthGroup, AuthUser, UserGroup } from '../models/index.js'
 import { CreateUserRequest, CreateUserResponse } from '../../interfaces/index.js'
+import { hashPassword } from "../../helper/index.js"
 import { In } from 'typeorm'
 
 export class UserCreationService {
@@ -42,10 +42,11 @@ export class UserCreationService {
         return { status: 400, message: `Invalid group IDs: ${invalidGroupIds.join(', ')}` }
       }
 
-      const hashedPassword = await hashing.make(password)
+      const {salt, hashedPassword} = await hashPassword(password)
       const userData = {
         username,
         password: hashedPassword,
+        salt,
         email,
         isAdmin,
         firstname,

@@ -64,16 +64,6 @@ export interface LoginRequest {
   password: string
 }
 
-export interface SuperUserRequest {
-  username: string
-  password: string
-}
-
-export interface SuperUserResponce {
-  status: number
-  message: string
-}
-
 export interface User {
   id?: any
   isAdmin: boolean

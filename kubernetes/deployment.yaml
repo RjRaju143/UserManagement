@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: s3-bucket
+  name: api
   labels:
-    app: s3-bucket
+    app: api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: s3-bucket
+      app: api
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -17,11 +17,11 @@ spec:
   template:
     metadata:
       labels:
-        app: s3-bucket
+        app: api
     spec:
       containers:
-        - name: s3-bucket
-          image: docker.cluster.absol.in/s3-bucket:v2
+        - name: api
+          image: docker.cluster.absol.in/api:v1
           ports:
             - containerPort: 3000
           env:
@@ -29,6 +29,6 @@ spec:
               value: postgresql-0.postgresql-service.postgresql.svc.cluster.local
           envFrom:
             - secretRef:
-                name: s3-bucket-secrets
+                name: api-secrets
       imagePullSecrets:
         - name: registry-secret

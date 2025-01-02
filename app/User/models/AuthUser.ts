@@ -12,23 +12,26 @@ export class AuthUser extends BaseEntity {
   @Column({ type: 'varchar' })
   password!: string
 
+  @Column({ type: 'varchar' })
+  salt!: string
+
   @Column({ type: 'varchar', unique: true })
   email!: string
 
   @Column({ type: 'boolean', default: false })
-  isAdmin: boolean = false
+  isAdmin!: boolean
 
   @Column({ type: 'boolean', default: false })
-  isSuperuser: boolean = false
+  isSuperuser!: boolean
 
   @Column({ type: 'boolean', default: false })
-  isStaff: boolean = false
+  isStaff!: boolean
 
   @Column({ type: 'boolean', default: false })
-  isGuest: boolean = false
+  isGuest!: boolean
 
   @Column({ type: 'boolean', default: false })
-  isDefaultPassword: boolean = false
+  isDefaultPassword!: boolean
 
   @Column({ type: 'varchar' })
   firstname!: string
