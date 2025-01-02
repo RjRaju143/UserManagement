@@ -1,0 +1,1442 @@
+openapi: "3.0.0"
+info:
+  title: "User Managament"
+  version: "1.0.0"
+  description: "This is a User Managament project"
+components:
+  responses:
+    Forbidden:
+      description: "Access token is missing or invalid"
+    Accepted:
+      description: "The request was accepted"
+    Created:
+      description: "The resource has been created"
+    NotFound:
+      description: "The resource has been created"
+    NotAcceptable:
+      description: "The resource has been created"
+  securitySchemes:
+    BearerAuth:
+      type: "http"
+      scheme: "bearer"
+      bearerFormat: "JWT"
+    BasicAuth:
+      type: "http"
+      scheme: "basic"
+    ApiKeyAuth:
+      type: "apiKey"
+      in: "header"
+      name: "X-API-Key"
+  schemas:
+    Any:
+      description: "Any JSON object not defined as schema"
+    PaginationMeta:
+      type: "object"
+      properties:
+        total:
+          type: "number"
+          example: 100
+          nullable: false
+        page:
+          type: "number"
+          example: 2
+          nullable: false
+        perPage:
+          type: "number"
+          example: 10
+          nullable: false
+        currentPage:
+          type: "number"
+          example: 3
+          nullable: false
+        lastPage:
+          type: "number"
+          example: 10
+          nullable: false
+        firstPage:
+          type: "number"
+          example: 1
+          nullable: false
+        lastPageUrl:
+          type: "string"
+          example: "/?page=10"
+          nullable: false
+        firstPageUrl:
+          type: "string"
+          example: "/?page=1"
+          nullable: false
+        nextPageUrl:
+          type: "string"
+          example: "/?page=6"
+          nullable: false
+        previousPageUrl:
+          type: "string"
+          example: "/?page=5"
+          nullable: false
+    CreateGroupRequest:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        isStatic:
+          type: "boolean"
+          nullable: false
+          example: true
+        permissionsIds:
+          type: "array"
+          items:
+            type: "number"
+            nullable: false
+            example: 241
+      required:
+        - "name"
+        - "isStatic"
+        - "permissionsIds"
+      description: "CreateGroupRequest (Interface)"
+    CreateGroupResponse:
+      type: "object"
+      properties:
+        status:
+          type: "number"
+          nullable: false
+          example: 943
+        id:
+          type: "number"
+          nullable: false
+          example: 799
+        message:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        name:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        permission_ids:
+          type: "array"
+          items:
+            type: "number"
+            nullable: false
+            example: 537
+        static:
+          type: "boolean"
+          nullable: false
+          example: true
+      required:
+        - "status"
+      description: "CreateGroupResponse (Interface)"
+    UpdateGroupResponse:
+      type: "object"
+      properties:
+        status:
+          type: "number"
+          nullable: false
+          example: 80
+        id:
+          type: "number"
+          nullable: false
+          example: 37
+        message:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        name:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        permissions:
+          type: "array"
+          items:
+            nullable: false
+            $ref: "#/components/schemas/(number | undefined)"
+        reporting_to_id:
+          nullable: false
+          $ref: "#/components/schemas/number | string"
+        groupdetails:
+          nullable: false
+          $ref: "#/components/schemas/{"
+        group:
+          nullable: false
+          $ref: "#/components/schemas/unknown"
+        reporting_to:
+          nullable: false
+          $ref: "#/components/schemas/unknown"
+      required:
+        - "status"
+      description: "UpdateGroupResponse (Interface)"
+    TokenData:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+          nullable: false
+          example: 984
+        userType:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+      required:
+        - "userType"
+      description: "TokenData (Interface)"
+    TokenResponce:
+      type: "object"
+      properties:
+        accessToken:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        refreshToken:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+      required:
+        - "accessToken"
+        - "refreshToken"
+      description: "TokenResponce (Interface)"
+    RefreshTokenResponse:
+      type: "object"
+      properties:
+        status:
+          type: "number"
+          nullable: false
+          example: 465
+        message:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        accessToken:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+      required:
+        - "status"
+      description: "RefreshTokenResponse (Interface)"
+    CreateUserRequest:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        password:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        email:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        isAdmin:
+          type: "boolean"
+          nullable: false
+          example: true
+        firstname:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        lastname:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        phone:
+          type: "number"
+          nullable: false
+          example: 582
+        gender:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        groupIds:
+          type: "array"
+          items:
+            type: "number"
+            nullable: false
+            example: 927
+      required:
+        - "username"
+        - "password"
+        - "email"
+        - "firstname"
+        - "lastname"
+        - "phone"
+        - "gender"
+        - "groupIds"
+      description: "CreateUserRequest (Interface)"
+    CreateUserResponse:
+      type: "object"
+      properties:
+        status:
+          type: "number"
+          nullable: false
+          example: 713
+        username:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        email:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        isAdmin:
+          type: "boolean"
+          nullable: false
+          example: true
+        firstname:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        lastname:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        phone:
+          type: "number"
+          nullable: false
+          example: 920
+        gender:
+          nullable: false
+          $ref: "#/components/schemas/string | null"
+        groups:
+          nullable: false
+          $ref: "#/components/schemas/{ id"
+        group_ids:
+          type: "array"
+          items:
+            type: "number"
+            nullable: false
+            example: 615
+        message:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+      required:
+        - "status"
+      description: "CreateUserResponse (Interface)"
+    GetAllUsersResponse:
+      type: "object"
+      properties:
+        status:
+          type: "number"
+          nullable: false
+          example: 267
+        results:
+          nullable: false
+          $ref: "#/components/schemas/Array<{}>"
+        message:
+          nullable: false
+          $ref: "#/components/schemas/any"
+        total:
+          type: "number"
+          nullable: false
+          example: 756
+        page:
+          type: "number"
+          nullable: false
+          example: 178
+        page_size:
+          type: "number"
+          nullable: false
+          example: 359
+        total_pages:
+          type: "number"
+          nullable: false
+          example: 45
+      required:
+        - "status"
+      description: "GetAllUsersResponse (Interface)"
+    UpdateUserRequest:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        email:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        isAdmin:
+          type: "boolean"
+          nullable: false
+          example: true
+        firstname:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        lastname:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        phone:
+          type: "number"
+          nullable: false
+          example: 206
+        gender:
+          nullable: false
+          $ref: "#/components/schemas/Gender"
+        groupIds:
+          nullable: false
+          $ref: "#/components/schemas/any"
+        isDelete:
+          type: "boolean"
+          nullable: false
+          example: true
+      required:
+        - "username"
+        - "email"
+        - "firstname"
+        - "lastname"
+        - "phone"
+        - "gender"
+        - "groupIds"
+        - "isDelete"
+      description: "UpdateUserRequest (Interface)"
+    LoginResponse:
+      type: "object"
+      properties:
+        status:
+          type: "number"
+          nullable: false
+          example: 275
+        accessToken:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        refreshToken:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        message:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+      required:
+        - "status"
+      description: "LoginResponse (Interface)"
+    LoginRequest:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        email:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        password:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+      required:
+        - "password"
+      description: "LoginRequest (Interface)"
+    User:
+      type: "object"
+      properties:
+        id:
+          nullable: false
+          $ref: "#/components/schemas/any"
+        isAdmin:
+          type: "boolean"
+          nullable: false
+          example: true
+        isSuperuser:
+          type: "boolean"
+          nullable: false
+          example: true
+      required:
+        - "isAdmin"
+        - "isSuperuser"
+      description: "User (Interface)"
+    getGroupByIdResponse:
+      type: "object"
+      properties:
+        status:
+          type: "number"
+          nullable: false
+          example: 850
+        message:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        id:
+          type: "number"
+          nullable: false
+          example: 158
+        name:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        permissions:
+          nullable: false
+          $ref: "#/components/schemas/any"
+        reporting_to_id:
+          nullable: false
+          $ref: "#/components/schemas/any"
+        groupdetails:
+          nullable: false
+          $ref: "#/components/schemas/any"
+      required:
+        - "status"
+      description: "getGroupByIdResponse (Interface)"
+    getGroupsResponse:
+      type: "object"
+      properties:
+        status:
+          type: "number"
+          nullable: false
+          example: 709
+        message:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        results:
+          nullable: false
+          $ref: "#/components/schemas/unknown"
+        id:
+          type: "number"
+          nullable: false
+          example: 419
+      required:
+        - "status"
+      description: "getGroupsResponse (Interface)"
+    UserResponce:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+          nullable: false
+          example: 459
+        username:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        password:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        email:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        isAdmin:
+          type: "boolean"
+          nullable: false
+          example: true
+        isSuperuser:
+          type: "boolean"
+          nullable: false
+          example: true
+        isStaff:
+          type: "boolean"
+          nullable: false
+          example: true
+        isGuest:
+          type: "boolean"
+          nullable: false
+          example: true
+        isDefaultPassword:
+          type: "boolean"
+          nullable: false
+          example: true
+        firstname:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        lastname:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        phone:
+          type: "number"
+          nullable: false
+          example: 159
+        otp:
+          nullable: false
+          $ref: "#/components/schemas/number | null"
+        latitude:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        longitude:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        gender:
+          nullable: false
+          $ref: "#/components/schemas/string | null"
+        isEmailVerified:
+          type: "boolean"
+          nullable: false
+          example: true
+        isActive:
+          type: "boolean"
+          nullable: false
+          example: true
+        isPhoneVerified:
+          type: "boolean"
+          nullable: false
+          example: true
+        userType:
+          type: "string"
+          nullable: false
+          example: "Lorem Ipsum"
+        lastLogin:
+          nullable: false
+          $ref: "#/components/schemas/string | null"
+        deviceAccess:
+          nullable: false
+          $ref: "#/components/schemas/string | null"
+        address:
+          nullable: false
+          $ref: "#/components/schemas/string | null"
+        pincode:
+          nullable: false
+          $ref: "#/components/schemas/number | null"
+        erpCode:
+          nullable: false
+          $ref: "#/components/schemas/number | null"
+        erpId:
+          nullable: false
+          $ref: "#/components/schemas/number | null"
+        isDelete:
+          type: "boolean"
+          nullable: false
+          example: true
+      description: "UserResponce (Interface)"
+paths:
+  /api/users/login:
+    post:
+      summary: " (login)"
+      description: "Returns **201** (Created) as **application/json**\n\n _C:\\Users\\Olsen\\Desktop\\adonisjs\\config/../app/../app/User/controllers/users_controller.ts_ - **login**"
+      operationId: "login"
+      parameters: []
+      tags:
+        - "USERS"
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status: 201
+                  accessToken: "string"
+                  refreshToken: "string"
+              example:
+                status: 201
+                accessToken: "string"
+                refreshToken: "string"
+          description: "Returns **201** (Created) as **application/json**"
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                username: "string"
+                password: "string"
+            example:
+              username: "string"
+              password: "string"
+  /api/users/create:
+    post:
+      summary: " (create)"
+      description: "Returns **201** (Created) as **application/json**\n\n _C:\\Users\\Olsen\\Desktop\\adonisjs\\config/../app/../app/User/controllers/users_controller.ts_ - **create**"
+      operationId: "createUserGroup"
+      parameters: []
+      tags:
+        - "USERS"
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  username: "string"
+                  password: "string"
+                  email: "string@example.com"
+                  isAdmin: "boolean"
+                  firstname: "string"
+                  lastname: "string"
+                  phone: "number"
+                  gender: "string"
+                  groups:
+                    type: "object"
+                    properties:
+                      0:
+                        type: "object"
+                        properties:
+                          id: "number"
+                          name: "string"
+                  group_ids:
+                    type: "object"
+                    properties:
+                      0: "number"
+              example:
+                username: "string"
+                password: "string"
+                email: "string@example.com"
+                isAdmin: "boolean"
+                firstname: "string"
+                lastname: "string"
+                phone: "number"
+                gender: "string"
+                groups:
+                  - id: "number"
+                    name: "string"
+                group_ids:
+                  - "number"
+          description: "Returns **201** (Created) as **application/json**"
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                username: "string"
+                password: "string"
+                email: "string"
+                isAdmin: "boolean"
+                firstname: "string"
+                lastname: "string"
+                phone: "number"
+                gender: "string"
+                groupIds:
+                  type: "object"
+                  properties:
+                    0: "numbers"
+            example:
+              username: "string"
+              password: "string"
+              email: "string"
+              isAdmin: "boolean"
+              firstname: "string"
+              lastname: "string"
+              phone: "number"
+              gender: "string"
+              groupIds:
+                - "numbers"
+  /api/users/list:
+    get:
+      summary: " (getUsers)"
+      description: "Returns **200** (OK) as **application/json**\n\n _C:\\Users\\Olsen\\Desktop\\adonisjs\\config/../app/../app/User/controllers/users_controller.ts_ - **getUsers**"
+      operationId: "getUsers"
+      parameters:
+        - in: "query"
+          name: "search"
+          description: "search the string in list"
+          schema:
+            example: ""
+            type: "string"
+          required: false
+        - in: "query"
+          name: "page"
+          description: "page number"
+          schema:
+            example: ""
+            type: "number"
+          required: false
+        - in: "query"
+          name: "page_size"
+          description: "pages size"
+          schema:
+            example: ""
+            type: "number"
+          required: false
+      tags:
+        - "USERS"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status: 200
+                  results:
+                    type: "object"
+                    properties:
+                      0:
+                        type: "object"
+                        properties:
+                          id: "number"
+                          username: "string"
+                          email: "string@example.com"
+                          isAdmin: "boolean"
+                          isSuperuser: "boolean"
+                          isStaff: "boolean"
+                          isGuest: "boolean"
+                          isDefaultPassword: "boolean"
+                          firstname: "string"
+                          lastname: "string"
+                          phone: "number"
+                          otp: "null"
+                          latitude: "string"
+                          longitude: "string"
+                          gender: "string"
+                          isEmailVerified: "boolean"
+                          isActive: "boolean"
+                          isPhoneVerified: "boolean"
+                          userType: "string"
+                          lastLogin: "null"
+                          deviceAccess: "null"
+                          address: "string"
+                          pincode: "number"
+                          erpCode: "null"
+                          erpId: "null"
+                          groups:
+                            type: "object"
+                            properties:
+                              0:
+                                type: "object"
+                                properties:
+                                  id: "number"
+                                  name: "string"
+                          group_ids:
+                            type: "object"
+                            properties:
+                              0: "number"
+              example:
+                status: 200
+                results:
+                  - id: "number"
+                    username: "string"
+                    email: "string@example.com"
+                    isAdmin: "boolean"
+                    isSuperuser: "boolean"
+                    isStaff: "boolean"
+                    isGuest: "boolean"
+                    isDefaultPassword: "boolean"
+                    firstname: "string"
+                    lastname: "string"
+                    phone: "number"
+                    otp: "null"
+                    latitude: "string"
+                    longitude: "string"
+                    gender: "string"
+                    isEmailVerified: "boolean"
+                    isActive: "boolean"
+                    isPhoneVerified: "boolean"
+                    userType: "string"
+                    lastLogin: "null"
+                    deviceAccess: "null"
+                    address: "string"
+                    pincode: "number"
+                    erpCode: "null"
+                    erpId: "null"
+                    groups:
+                      - id: "number"
+                        name: "string"
+                    group_ids:
+                      - "number"
+          description: "Returns **200** (OK) as **application/json**"
+      security: []
+  /api/users/groups:
+    get:
+      summary: " (getGroups)"
+      description: "Returns **200** (OK) as **application/json**\n\n _C:\\Users\\Olsen\\Desktop\\adonisjs\\config/../app/../app/User/controllers/users_controller.ts_ - **getGroups**"
+      operationId: "getGroups"
+      parameters:
+        - in: "query"
+          name: "search"
+          description: "search the string in list"
+          schema:
+            example: ""
+            type: "string"
+          required: false
+        - in: "query"
+          name: "page"
+          description: "page number"
+          schema:
+            example: ""
+            type: "number"
+          required: false
+        - in: "query"
+          name: "page_size"
+          description: "pages size"
+          schema:
+            example: ""
+            type: "number"
+          required: false
+      tags:
+        - "USERS"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  results:
+                    type: "object"
+                    properties:
+                      0:
+                        type: "object"
+                        properties:
+                          id: "number"
+                          name: "string"
+                          permission_ids:
+                            type: "object"
+                            properties:
+                              0: "number"
+                          reporting_to: "string"
+                          isStatic: "boolean"
+                          is_delete: "boolean"
+              example:
+                results:
+                  - id: "number"
+                    name: "string"
+                    permission_ids:
+                      - "number"
+                    reporting_to: "string"
+                    isStatic: "boolean"
+                    is_delete: "boolean"
+          description: "Returns **200** (OK) as **application/json**"
+      security: []
+    post:
+      summary: " (createGroup)"
+      description: "Returns **201** (Created) as **application/json**\n\n _C:\\Users\\Olsen\\Desktop\\adonisjs\\config/../app/../app/User/controllers/users_controller.ts_ - **createGroup**"
+      operationId: "create user group"
+      parameters: []
+      tags:
+        - "USERS"
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  name: "string"
+                  isStatic: "boolean"
+                  permissionsIds:
+                    type: "object"
+                    properties:
+                      0: "number"
+              example:
+                name: "string"
+                isStatic: "boolean"
+                permissionsIds:
+                  - "number"
+          description: "Returns **201** (Created) as **application/json**"
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                name: "string"
+                isStatic: "boolean"
+                permissionsIds:
+                  type: "object"
+                  properties:
+                    0: "number"
+            example:
+              name: "string"
+              isStatic: "boolean"
+              permissionsIds:
+                - "number"
+  /api/users/groups/{id}:
+    get:
+      summary: " (getGroupById)"
+      description: "Returns **200** (OK) as **application/json**\n\n _C:\\Users\\Olsen\\Desktop\\adonisjs\\config/../app/../app/User/controllers/users_controller.ts_ - **getGroupById**"
+      operationId: "getGroupById"
+      parameters:
+        - in: "path"
+          name: "id"
+          schema:
+            type: "string"
+          required: true
+      tags:
+        - "USERS"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status: "number"
+                  id: "number"
+                  name: "string"
+                  permissions:
+                    type: "object"
+                    properties:
+                      0: "number"
+                  reporting_to_id: "number"
+                  groupdetails:
+                    type: "object"
+                    properties:
+                      group: "number"
+                      reporting_to: "number"
+              example:
+                status: "number"
+                id: "number"
+                name: "string"
+                permissions:
+                  - "number"
+                reporting_to_id: "number"
+                groupdetails:
+                  group: "number"
+                  reporting_to: "number"
+          description: "Returns **200** (OK) as **application/json**"
+      security: []
+    put:
+      summary: " (updateGroupById)"
+      description: "update group with specified permissions.\n\n _C:\\Users\\Olsen\\Desktop\\adonisjs\\config/../app/../app/User/controllers/users_controller.ts_ - **updateGroupById**"
+      operationId: "updateGroupById"
+      parameters:
+        - in: "path"
+          name: "id"
+          schema:
+            type: "string"
+          required: true
+      tags:
+        - "USERS"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status: "number"
+                  id: "number"
+                  name: "string"
+                  permissions:
+                    type: "object"
+                    properties:
+                      0: "number"
+                  reporting_to_id: "number"
+                  groupdetails:
+                    type: "object"
+                    properties:
+                      group: "number"
+                      reporting_to: "number"
+              example:
+                status: "number"
+                id: "number"
+                name: "string"
+                permissions:
+                  - "number"
+                reporting_to_id: "number"
+                groupdetails:
+                  group: "number"
+                  reporting_to: "number"
+          description: "Returns **200** (OK) as **application/json**"
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                name: "string"
+                permission_ids:
+                  type: "object"
+                  properties:
+                    0: "number"
+                    1: "number"
+            example:
+              name: "string"
+              permission_ids:
+                - "number"
+                - "number"
+  /api/users/{id}:
+    get:
+      summary: " (getUserById)"
+      description: "Returns **200** (OK) as **application/json**\n\n _C:\\Users\\Olsen\\Desktop\\adonisjs\\config/../app/../app/User/controllers/users_controller.ts_ - **getUserById**"
+      operationId: "getByIdUserGroup"
+      parameters:
+        - in: "path"
+          name: "id"
+          schema:
+            type: "string"
+          required: true
+      tags:
+        - "USERS"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status: 200
+                  users:
+                    type: "object"
+                    properties:
+                      0:
+                        type: "object"
+                        properties:
+                          id: "number"
+                          username: "string"
+                          email: "string@example.com"
+                          isAdmin: "boolean"
+                          isSuperuser: "boolean"
+                          isStaff: "boolean"
+                          isGuest: "boolean"
+                          isDefaultPassword: "boolean"
+                          firstname: "string"
+                          lastname: "string"
+                          phone: "number"
+                          otp: "null"
+                          latitude: "string"
+                          longitude: "string"
+                          gender: "string"
+                          isEmailVerified: "boolean"
+                          isActive: "boolean"
+                          isPhoneVerified: "boolean"
+                          userType: "string"
+                          lastLogin: "null"
+                          deviceAccess: "null"
+                          address: "string"
+                          pincode: "number"
+                          erpCode: "null"
+                          erpId: "null"
+                          groups:
+                            type: "object"
+                            properties:
+                              0:
+                                type: "object"
+                                properties:
+                                  id: "number"
+                                  name: "string"
+                          group_ids:
+                            type: "object"
+                            properties:
+                              0: "number"
+              example:
+                status: 200
+                users:
+                  - id: "number"
+                    username: "string"
+                    email: "string@example.com"
+                    isAdmin: "boolean"
+                    isSuperuser: "boolean"
+                    isStaff: "boolean"
+                    isGuest: "boolean"
+                    isDefaultPassword: "boolean"
+                    firstname: "string"
+                    lastname: "string"
+                    phone: "number"
+                    otp: "null"
+                    latitude: "string"
+                    longitude: "string"
+                    gender: "string"
+                    isEmailVerified: "boolean"
+                    isActive: "boolean"
+                    isPhoneVerified: "boolean"
+                    userType: "string"
+                    lastLogin: "null"
+                    deviceAccess: "null"
+                    address: "string"
+                    pincode: "number"
+                    erpCode: "null"
+                    erpId: "null"
+                    groups:
+                      - id: "number"
+                        name: "string"
+                    group_ids:
+                      - "number"
+          description: "Returns **200** (OK) as **application/json**"
+      security: []
+    put:
+      summary: " (updateUser)"
+      description: "update user group with specified permissions.\n\n _C:\\Users\\Olsen\\Desktop\\adonisjs\\config/../app/../app/User/controllers/users_controller.ts_ - **updateUser**"
+      operationId: "updateUser"
+      parameters:
+        - in: "path"
+          name: "id"
+          schema:
+            type: "string"
+          required: true
+      tags:
+        - "USERS"
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  username: "string"
+                  password: "string"
+                  email: "string@example.com"
+                  isAdmin: "boolean"
+                  firstname: "string"
+                  lastname: "string"
+                  phone: "number"
+                  gender: "male"
+                  groups:
+                    type: "object"
+                    properties:
+                      0:
+                        type: "object"
+                        properties:
+                          id: "number"
+                          name: "string"
+                  group_ids:
+                    type: "object"
+                    properties:
+                      0: "number"
+              example:
+                username: "string"
+                password: "string"
+                email: "string@example.com"
+                isAdmin: "boolean"
+                firstname: "string"
+                lastname: "string"
+                phone: "number"
+                gender: "male"
+                groups:
+                  - id: "number"
+                    name: "string"
+                group_ids:
+                  - "number"
+          description: "Returns **201** (Created) as **application/json**"
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                username: "string"
+                email: "string"
+                isAdmin: "boolean"
+                firstname: "string"
+                lastname: "string"
+                phone: "number"
+                gender: "string"
+                groupIds:
+                  type: "object"
+                  properties:
+                    0: "numbers"
+            example:
+              username: "string"
+              email: "string"
+              isAdmin: "boolean"
+              firstname: "string"
+              lastname: "string"
+              phone: "number"
+              gender: "string"
+              groupIds:
+                - "numbers"
+  /api/users/token/refresh:
+    post:
+      summary: " (refreshToken)"
+      description: "Returns **201** (Created) as **application/json**\n\n _C:\\Users\\Olsen\\Desktop\\adonisjs\\config/../app/../app/User/controllers/users_controller.ts_ - **refreshToken**"
+      operationId: "refreshToken"
+      parameters: []
+      tags:
+        - "USERS"
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status: 200
+                  accessToken: "string"
+                  refreshToken: "string"
+              example:
+                status: 200
+                accessToken: "string"
+                refreshToken: "string"
+          description: "Returns **201** (Created) as **application/json**"
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                refresh: "string"
+            example:
+              refresh: "string"
+  /api/users/logout:
+    delete:
+      summary: " (logout)"
+      description: "logout user.\n\n _C:\\Users\\Olsen\\Desktop\\adonisjs\\config/../app/../app/User/controllers/users_controller.ts_ - **logout**"
+      operationId: "logout"
+      parameters: []
+      tags:
+        - "USERS"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status: "200"
+                  message: "string"
+              example:
+                status: "200"
+                message: "string"
+          description: "Returns **200** (OK) as **application/json**"
+      security: []
+  /api/s3/list:
+    get:
+      summary: " (listAllObjects)"
+      description: "Returns **200** (OK) as **application/json**\n\n _C:\\Users\\Olsen\\Desktop\\adonisjs\\config/../app/../app/s3/controllers/s3.controller.ts_ - **listAllObjects**"
+      operationId: "listAllObjects"
+      parameters: []
+      tags:
+        - "S3"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  Buckets:
+                    type: "object"
+                    properties:
+                      0:
+                        type: "object"
+                        properties:
+                          BucketName: "String"
+                          Objects:
+                            type: "object"
+                            properties:
+                              0:
+                                type: "object"
+                                properties:
+                                  Key: "String"
+                                  LastModified: "String"
+                  Pagination:
+                    type: "object"
+                    properties:
+                      currentPage: "number"
+                      maxBuckets: "number"
+                      totalBuckets: "number"
+              example:
+                Buckets:
+                  - BucketName: "String"
+                    Objects:
+                      - Key: "String"
+                        LastModified: "String"
+                Pagination:
+                  currentPage: "number"
+                  maxBuckets: "number"
+                  totalBuckets: "number"
+          description: "Returns **200** (OK) as **application/json**"
+      security: []
+  /api/s3/list-buckets:
+    get:
+      summary: " (listBuckets)"
+      description: "Returns **200** (OK) as **application/json**\n\n _C:\\Users\\Olsen\\Desktop\\adonisjs\\config/../app/../app/s3/controllers/s3.controller.ts_ - **listBuckets**"
+      operationId: "listBuckets"
+      parameters: []
+      tags:
+        - "S3"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "object"
+              example:
+                - Name: "String"
+                  CreationDate: "String"
+                - Name: "String"
+                  LastModified: "String"
+          description: "Returns **200** (OK) as **application/json**"
+      security: []
+  /api/s3/upload-success:
+    get:
+      summary: " (objectsUploadSuccess)"
+      description: "Returns **200** (OK) as **application/json**\n\n _C:\\Users\\Olsen\\Desktop\\adonisjs\\config/../app/../app/s3/controllers/s3.controller.ts_ - **objectsUploadSuccess**"
+      operationId: "objectsUploadSuccess"
+      parameters: []
+      tags:
+        - "S3"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "object"
+              example:
+                - BucketName: "String"
+                  Objects:
+                    - Key: "String"
+                      LastModified: "String"
+                - BucketName: "String"
+                  Objects:
+                    - Key: "String"
+                      LastModified: "String"
+          description: "Returns **200** (OK) as **application/json**"
+      security: []
+  /api/s3/upload-failed:
+    get:
+      summary: " (objectsUploadFailed)"
+      description: "Returns **200** (OK) as **application/json**\n\n _C:\\Users\\Olsen\\Desktop\\adonisjs\\config/../app/../app/s3/controllers/s3.controller.ts_ - **objectsUploadFailed**"
+      operationId: "objectsUploadFailed"
+      parameters: []
+      tags:
+        - "S3"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "object"
+              example:
+                - BucketName: "String"
+                  Objects: []
+                - BucketName: "String"
+                  Objects: []
+          description: "Returns **200** (OK) as **application/json**"
+      security: []
+  /api/s3/list-buckets/{bucketName}:
+    get:
+      summary: " (listBucketObjects)"
+      description: "Returns **200** (OK) as **application/json**\n\n _C:\\Users\\Olsen\\Desktop\\adonisjs\\config/../app/../app/s3/controllers/s3.controller.ts_ - **listBucketObjects**"
+      operationId: "listBucketObjects"
+      parameters:
+        - in: "path"
+          name: "bucketName"
+          schema:
+            type: "string"
+          required: true
+      tags:
+        - "S3"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "object"
+              example:
+                - Key: "String"
+                  LastModified: "String"
+                - Key: "String"
+                  LastModified: "String"
+          description: "Returns **200** (OK) as **application/json**"
+      security: []
+tags:
+  - name: "USERS"
+    description: "Everything related to USERS"
+  - name: "S3"
+    description: "Everything related to S3"
